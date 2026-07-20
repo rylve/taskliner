@@ -98,14 +98,6 @@ Bug reports and concrete feedback are welcome.
 
 Taskliner is mainly developed by the maintainer. Replies, fixes, and pull request review are not guaranteed. Large changes need an Issue discussion first. See [CONTRIBUTING.md](./CONTRIBUTING.md) and [SUPPORT.md](./SUPPORT.md).
 
-## Sponsorship
-
-Taskliner is free, open source, and ad-free.
-
-Sponsorship supports the maintained official version, security work, sync infrastructure, and continued development.
-
-Core features are not locked behind sponsorship. GitHub Sponsors setup can wait until a public account is ready.
-
 ## License and trademarks
 
 - Source code: [MIT License](./LICENSE)
