@@ -92,8 +92,8 @@ This is the central technical contribution of the AI-assisted workflow: Codex co
 - Public extraction and safety checks: `scripts/export-public-repo.mjs` and `public-repo/`
 - Session-to-work mapping: [codex-session-work-map.md](./codex-session-work-map.md)
 
-## Submission evidence still to provide
+## Evidence available to judges
 
-The primary Codex build thread's `/feedback` Session ID must be retrieved from Codex and entered in the Devpost submission. If multiple threads were used, select the thread containing the majority of the core implementation. The repository documents the workflow, but the Session ID should come from the actual primary build thread.
+The phase map, design documents, source directories, tests, and demo materials provide the technical evidence behind the workflow described here. The S01–S10 labels are explanatory work-group labels; they are not Codex Session IDs. The primary build thread is the thread containing most of the core implementation, and its separate `/feedback` identifier is handled through the hackathon submission process.
 
 See the [OpenAI Build Week FAQ](https://openai.devpost.com/details/faqs) for the submission requirements.

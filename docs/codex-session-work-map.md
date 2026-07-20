@@ -2,7 +2,7 @@
 
 Updated: 2026-07-21
 
-This is a public summary of the Build Week work phases. The labels below are explanatory work-group labels, not Codex Session IDs. The actual `/feedback` Session ID for the primary build thread must be retrieved from Codex and entered in the Devpost submission.
+This is a public summary of the Build Week work phases. The labels below are explanatory work-group labels, not Codex Session IDs. They make the relationship between major implementation phases and the repository evidence easy to inspect.
 
 The public repository is a clean release snapshot and does not contain the complete historical Git timeline. These phases are therefore documented together with the relevant design documents, tests, demo materials, and dated session evidence.
 
@@ -27,10 +27,8 @@ The public repository is a clean release snapshot and does not contain the compl
 - Codex translated those decisions into multi-file implementation, automated tests, Git iterations, real-browser checks, debugging, deployment validation, and demo evidence.
 - The strongest examples are the encrypted synchronization, device onboarding, and conflict-safety phases, where design decisions, implementation, tests, and browser verification were iterated together.
 
-## Evidence and Session ID handoff
+## Evidence available to judges
 
-For each phase, judges can inspect the corresponding design documents, source directories, tests, and demo materials listed in [codex-development-history.md](./codex-development-history.md). The S01–S10 labels are not substitutes for the required `/feedback` value.
-
-Before submission, run `/feedback` in the primary Codex build thread—the thread containing most of the core implementation—and replace the placeholder in the submission form with that actual Session ID.
+For each phase, judges can inspect the corresponding design documents, source directories, tests, and demo materials listed in [codex-development-history.md](https://github.com/rylve/taskliner/blob/main/docs/codex-development-history.md). The S01–S10 labels describe the work phases; the separate primary-thread identifier is handled through the hackathon submission process.
 
 See the [OpenAI Build Week FAQ](https://openai.devpost.com/details/faqs) for the existing-project, Codex, GPT-5.6, and Session ID requirements.
