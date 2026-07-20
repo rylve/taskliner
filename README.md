@@ -75,6 +75,8 @@ This repository documents the model for transparency. It is **not** a formal sec
 
 Taskliner was substantially extended during OpenAI Build Week using Codex with GPT-5.6. The project was developed through a repeatable loop of specification, implementation, automated testing, real-browser verification, debugging, and release preparation.
 
+The public repository was prepared as a clean release snapshot on July 21, 2026. Its public Git history contains five release-preparation commits, so the full phase-by-phase development record is documented separately in [docs/codex-development-history.md](./docs/codex-development-history.md) and [docs/codex-session-work-map.md](./docs/codex-session-work-map.md).
+
 ### Where Codex accelerated the workflow
 
 - Turned cross-cutting design work into small implementation and test iterations across the outline model, storage, sync, encryption, pairing, and mobile UI.

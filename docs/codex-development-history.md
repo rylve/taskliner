@@ -6,12 +6,14 @@ This document summarizes the Build Week development record from the repository's
 
 Taskliner is a browser-based, keyboard-first outline task editor. Users can write tasks in the order they think, organize them into nested branches, and focus on the branch that matters. Local use requires no account. Optional synchronization uses encrypted artifacts in the user's Google Drive app data folder rather than storing task content in the service's long-term database.
 
-## Build Week scope
+## Build Week scope and public-history note
 
-- The repository contains 130 commits dated from 2026-07-10 through 2026-07-21.
+- The public repository is a clean release snapshot reconstructed on 2026-07-21. Its public Git history currently contains five commits, all dated 2026-07-21; it does not preserve the earlier working repository's full commit count.
 - The largest Build Week extensions covered synchronization, end-to-end encryption, device onboarding, mobile UX, tutorials, deployment, and release preparation.
 - The `tests/` directory contains coverage for the model, migrations, IndexedDB, synchronization, OAuth, encryption, pairing, Discord integration, and public-surface behavior.
-- The project existed before Build Week; the new work is traceable through commit dates and the design-document history.
+- The project existed before Build Week. The phase-by-phase work is documented in [codex-session-work-map.md](./codex-session-work-map.md), design documents, test history, and the Codex submission evidence. The clean public snapshot should not be interpreted as a complete historical Git timeline.
+
+This distinction is intentional: the repository is publishable and reproducible, while the development record remains explicit about which evidence comes from the reconstructed public snapshot and which comes from the dated Build Week work log.
 
 ## Major implementation areas
 
@@ -88,6 +90,7 @@ This is the central technical contribution of the AI-assisted workflow: Codex co
 - Agent workflow rules: `.agents/AGENTS.md` and the agent-operations section in `TODO.md`
 - Demo materials: `.tmp/demo-video/README.md`, `.tmp/demo-video/SCRIPT.md`, and the narration timeline
 - Public extraction and safety checks: `scripts/export-public-repo.mjs` and `public-repo/`
+- Session-to-work mapping: [codex-session-work-map.md](./codex-session-work-map.md)
 
 ## Submission evidence still to provide
 
