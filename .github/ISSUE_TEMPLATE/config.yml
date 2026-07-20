@@ -1,0 +1,11 @@
+# These issue forms are configured in config.yml
+
+blank_issues_enabled: false
+
+contact_links:
+  - name: Security vulnerability
+    url: https://taskliner.app/contact/
+    about: Do not file public Issues for security problems. Prefer GitHub Private Vulnerability Reporting (see SECURITY.md), or email bloomlateral@gmail.com.
+  - name: Feature ideas
+    url: https://taskliner.app/contact/
+    about: Taskliner is primarily maintainer-driven. Small concrete ideas can go in a regular Issue; otherwise use Contact. Large changes need discussion before implementation.

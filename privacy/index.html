@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Taskliner privacy policy." />
+    <title>Privacy Policy — Taskliner</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../theme.css" />
+    <link rel="stylesheet" href="../site.css" />
+  </head>
+  <body class="site-page pop-root pop-dots">
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="site-brand" href="../">Taskliner</a>
+        <nav class="site-nav" aria-label="Site">
+          <a href="../">Open app</a>
+          <a href="../terms/">Terms</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </header>
+      <main class="site-main site-content">
+        <p class="site-kicker">Policy</p>
+        <h1>Privacy Policy</h1>
+        <p class="site-meta">Last updated: July 21, 2026</p>
+
+        <div class="site-callout">
+          <strong>Current release status</strong>
+          Taskliner is local-first. Optional Google Drive sync uses end-to-end encrypted files, and optional Discord completion sharing uses the Webhook URL you provide. Cloudflare Web Analytics measures page views and performance. Advertising and error-reporting SDKs are not enabled.
+        </div>
+
+        <h2>Who operates Taskliner</h2>
+        <p>Taskliner is an independent software project operated from Japan. For privacy or security questions, contact <a href="mailto:bloomlateral@gmail.com">bloomlateral@gmail.com</a>.</p>
+
+        <h2>What Taskliner stores in your browser</h2>
+        <p>When you use the app, task titles, notes, due dates, completion state, outline structure, and app settings are stored in your browser. The current release uses IndexedDB as its local data store and may retain the legacy <code>localStorage["taskliner-v1"]</code> copy while migration and recovery safeguards are in place.</p>
+        <p>This data is not sent to a Taskliner database. Clearing browser storage can remove your local copy, so use the JSON export in the File menu when you need a portable backup.</p>
+
+        <h2>Optional Discord completion sharing</h2>
+        <p>If you explicitly enable Discord completion sharing and provide your own Discord Incoming Webhook URL, the browser sends a completion update directly to that Discord channel. Taskliner does not proxy or store these posts on an operator server.</p>
+        <p>The selected visibility level controls whether the post contains only a generic progress message, the top-level category, or the completed task title. Without Google sync, the Webhook setting stays on that device. With encrypted sync enabled, the Webhook URL and sharing settings are included only as encrypted shared settings. Pending and failed completion posts remain local and are never synced or included in task JSON exports. Discord processes received posts under its own terms and privacy policy.</p>
+
+        <h2>Information processed by the website</h2>
+        <ul>
+          <li>The hosting provider, Cloudflare Pages, may process ordinary request data such as IP address, user agent, and access logs under its own policies.</li>
+          <li>Cloudflare Web Analytics loads a small beacon script to measure page views, referrers, and basic web performance. It is configured not to use client-side cookies for analytics, and Taskliner does not send task titles, notes, due dates, or outline structure to analytics.</li>
+          <li>The app loads fonts from Google Fonts. The browser therefore requests font resources from Google and Google may receive ordinary request data for those requests.</li>
+          <li>If you email us, we receive the email address and message you choose to send.</li>
+        </ul>
+        <p>These providers may process information outside Japan. The current release does not include an advertising script or a third-party error-reporting service. If you enable sync, the browser uses Taskliner’s Cloudflare Pages Functions and Google Drive API to access only the <code>drive.appdata</code> area.</p>
+
+        <h2>Google authorization and Drive sync</h2>
+        <p>When you explicitly connect Google, Google’s authorization endpoint handles account selection and consent. Taskliner requests only the <code>openid</code>, <code>email</code>, and <code>drive.appdata</code> scopes. Cloudflare Pages Functions exchange the authorization code and keep an encrypted refresh token so the browser does not need to start an OAuth redirect on every reload. Taskliner does not request access to ordinary Drive files.</p>
+        <p>Before upload, the browser encrypts each device state and shared setting with a random 256-bit workspace data key using AES-256-GCM. Cloudflare Pages Functions validates and relays only the encrypted artifact and its outer metadata, and Google Drive stores the encrypted files in <code>appDataFolder</code>. Taskliner does not store task content, the workspace key, or Discord Webhook URLs in D1 or KV. When you connect Google, D1 stores your Google account identifier and email address, the encrypted OAuth refresh token, and non-secret synchronization metadata such as workspace and encryption cutover status.</p>
+        <p>The workspace key is protected on a returning device by a non-extractable browser key. A Taskliner passkey using the WebAuthn PRF extension can protect a synchronized key wrapper. If PRF is unavailable on the first device, saving a randomly generated recovery file is required before sync starts. A new device can use the synchronized passkey, approval from an existing device, or the recovery file. If all approved devices, usable passkeys, and recovery files are lost, neither Taskliner nor Google can recover the encrypted data.</p>
+        <p>End-to-end encryption protects synchronized data in Google Drive, while passing through Cloudflare, and from Taskliner’s backend. Local task data remains readable in IndexedDB. It does not protect an unlocked browser profile, malicious code executing in the Taskliner page after unlock, compromised devices, or information contained in ordinary network metadata and access logs.</p>
+        <p>Disconnecting Taskliner removes the local session; it does not delete encrypted Drive files or the refresh token shared by other devices. “Disconnect Google everywhere” revokes Google access and removes that stored refresh token and account record from Taskliner. Drive deletion is a separate explicit action. An empty or externally deleted Drive snapshot is not treated as a command to erase the local document.</p>
+
+        <h2>Choices and deletion</h2>
+        <ul>
+          <li>Use Taskliner without an account or Google connection.</li>
+          <li>Decline Google authorization or revoke it from your Google Account.</li>
+          <li>Disconnect Discord completion sharing in the app to clear the Webhook setting on that device.</li>
+          <li>Export your data as JSON from the File menu.</li>
+          <li>Delete local data through your browser’s site-data controls.</li>
+          <li>Contact us about a privacy or security request.</li>
+        </ul>
+
+        <h2>Children</h2>
+        <p>Taskliner is not directed to children under 16 and is not designed or advertised as a service for children.</p>
+
+        <h2>Changes to this policy</h2>
+        <p>We will update this page when data practices change, especially before enabling advertising or additional account features. The effective date at the top of this page will change with the policy.</p>
+      </main>
+      <footer class="site-footer">
+        <span>Taskliner · Privacy Policy</span>
+        <nav aria-label="Footer">
+          <a href="../data-and-sync/">Data &amp; sync</a>
+          <a href="../terms/">Terms</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </footer>
+    </div>
+  </body>
+</html>

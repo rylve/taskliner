@@ -1,0 +1,85 @@
+name: Bug report
+description: Report a reproducible problem in Taskliner
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+
+        **Do not paste** real task titles/notes, JSON exports of personal data, Discord Webhook URLs, tokens, cookies, or private keys.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Describe the unexpected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps. Use fake sample tasks only.
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: e.g. Chrome 127, Safari 18, Firefox 140
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. Windows 11, macOS 15, iOS 18, Android 15
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Which deployment
+      options:
+        - Official https://taskliner.app
+        - Self-hosted
+        - Local static server
+        - Unsure
+    validations:
+      required: true
+  - type: dropdown
+    id: sync
+    attributes:
+      label: Are you using Google Drive sync?
+      options:
+        - No (local only)
+        - Yes
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: minimal
+    attributes:
+      label: Minimal extra information
+      description: Console errors (redact secrets), approximate timing, or a tiny synthetic example. No real personal task content.
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I did not include real task content, JSON exports of personal data, Webhook URLs, or secrets.
+          required: true

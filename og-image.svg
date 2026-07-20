@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#fff8ec"/>
+  <circle cx="1040" cy="110" r="150" fill="#ffd94a"/>
+  <circle cx="155" cy="545" r="120" fill="#f4604c"/>
+  <path d="M90 112h1020M90 498h1020" stroke="#2c3255" stroke-width="8"/>
+  <text x="100" y="300" fill="#2c3255" font-family="Arial, sans-serif" font-size="116" font-weight="800">Taskliner</text>
+  <text x="106" y="390" fill="#6a6f8e" font-family="Arial, sans-serif" font-size="42">See it all. Dive into one.</text>
+</svg>

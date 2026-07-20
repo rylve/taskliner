@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" />
+    <meta name="description" content="See it all. Dive into one. A local-first outline for tasks and ideas—no account required." />
+    <meta name="theme-color" content="#fff8ec" />
+    <meta name="taskliner-sync-v3" content="enabled" />
+    <link rel="canonical" href="https://taskliner.app/" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="Taskliner — See it all. Dive into one." />
+    <meta property="og:description" content="A local-first outline for tasks and ideas. Start writing without an account. Optional end-to-end encrypted Google Drive sync." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://taskliner.app/" />
+    <meta property="og:image" content="https://taskliner.app/og-image.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Taskliner — See it all. Dive into one." />
+    <meta name="twitter:description" content="A local-first outline for tasks and ideas. Start writing without an account. Optional end-to-end encrypted Google Drive sync." />
+    <link rel="stylesheet" href="./site.css" />
+    <title>Taskliner</title>
+    <script src="./bootstrap.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700&family=Nunito:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./vendor/flatpickr/flatpickr.min.css" />
+    <link rel="stylesheet" href="./theme.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="pop-root pop-dots" data-theme="easygoing">
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <a class="brand-mark pop-title" href="./" aria-label="Taskliner home">
+            <span class="brand-logo" aria-hidden="true"></span>
+            <span class="brand-wordmark">Taskliner</span>
+          </a>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button type="button" class="tab is-active" data-tab="active" role="tab" aria-selected="true" data-i18n="tab.active">
+            Active
+          </button>
+          <button type="button" class="tab" data-tab="archive" role="tab" aria-selected="false" data-i18n="tab.archive">
+            Archive
+          </button>
+        </nav>
+        <div class="topbar-end">
+          <div id="header-sync-status" class="header-sync-status" data-state="disconnected" role="status" aria-live="polite" title="Not connected" hidden>
+            <span class="header-sync-status-icon" aria-hidden="true"></span>
+            <span id="header-sync-status-label" class="header-sync-status-label">Not connected</span>
+          </div>
+          <div class="tool-pop" data-pop="topbar-menu">
+          <button
+            type="button"
+            class="tool-icon-btn topbar-menu-btn"
+            id="btn-topbar-menu"
+            aria-expanded="false"
+            aria-controls="topbar-menu-panel"
+            data-i18n-title="menu"
+            data-i18n-aria-label="menu"
+            title="Menu"
+            aria-label="Menu"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+          </button>
+          <div class="topbar-actions tool-panel tool-panel--topbar" id="topbar-menu-panel" role="menu" data-i18n-aria-label="menu" aria-label="Menu">
+            <button
+              type="button"
+              class="tool-icon-btn topbar-action-btn topbar-about-btn"
+              id="btn-about"
+              data-i18n-title="about"
+              data-i18n-aria-label="about"
+              title="About"
+              aria-haspopup="dialog"
+              aria-controls="about-dialog"
+              aria-label="About"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.1" />
+                <path d="M12 10.8v5.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" />
+                <circle cx="12" cy="7.5" r="1.05" fill="currentColor" />
+              </svg>
+              <span class="topbar-action-label" data-i18n="about">About</span>
+            </button>
+            <button
+              type="button"
+              class="tool-icon-btn topbar-action-btn"
+              id="btn-help"
+              data-i18n-title="help"
+              data-i18n-aria-label="help"
+              title="Help"
+              aria-haspopup="dialog"
+              aria-controls="help-dialog"
+              aria-label="Help"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.1" />
+                <path
+                  d="M9.6 9.2a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.2.9-1.2 1.8"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.1"
+                  stroke-linecap="round"
+                />
+                <circle cx="12" cy="16.4" r="1.05" fill="currentColor" />
+              </svg>
+              <span class="topbar-action-label" data-i18n="help">Help</span>
+            </button>
+            <button
+              type="button"
+              class="tool-icon-btn topbar-action-btn"
+              id="btn-theme"
+              data-i18n-title="theme.change"
+              data-i18n-aria-label="theme.change"
+              title="Change theme"
+              aria-haspopup="dialog"
+              aria-controls="theme-dialog"
+              aria-label="Change theme"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path
+                  d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2.2-.9 2.2-2s-.5-1.7-1.2-2.2c-.6-.4-.9-1-.9-1.7a2.4 2.4 0 0 1 2.4-2.4h1.1A6.4 6.4 0 0 0 12 3.5Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.1"
+                  stroke-linejoin="round"
+                />
+                <circle cx="7.8" cy="10" r="1.1" fill="currentColor" />
+                <circle cx="10.2" cy="7.2" r="1.1" fill="currentColor" />
+                <circle cx="13.8" cy="7.2" r="1.1" fill="currentColor" />
+              </svg>
+              <span class="topbar-action-label" data-i18n="theme">Theme</span>
+            </button>
+            <button
+              type="button"
+              class="tool-icon-btn topbar-action-btn"
+              id="btn-file-menu"
+              data-i18n-title="file"
+              data-i18n-aria-label="file"
+              title="File"
+              aria-haspopup="dialog"
+              aria-controls="file-dialog"
+              aria-label="File"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path
+                  d="M7 4.5h6.2L17.5 9v10.5H7V4.5Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.1"
+                  stroke-linejoin="round"
+                />
+                <path d="M13 4.5V9h4.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" />
+              </svg>
+              <span class="topbar-action-label" data-i18n="file">File</span>
+            </button>
+            <button
+              type="button"
+              class="tool-icon-btn topbar-action-btn"
+              id="btn-discord"
+              data-i18n-title="discord.heading"
+              data-i18n-aria-label="discord.heading"
+              title="Share task completions to Discord"
+              aria-label="Share task completions to Discord"
+              aria-haspopup="dialog"
+              aria-controls="discord-dialog"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path d="M6.2 7.2a14 14 0 0 1 11.6 0c1.1 2 1.8 4.2 2 6.6-1.5 2-3.4 3.2-5.5 3.8l-.9-1.2c.8-.3 1.5-.7 2.2-1.2-2.4 1.1-4.8 1.1-7.2 0 .7.5 1.4.9 2.2 1.2l-.9 1.2c-2.1-.6-4-1.8-5.5-3.8.2-2.4.9-4.6 2-6.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                <circle cx="9" cy="12.2" r="1.1" fill="currentColor" />
+                <circle cx="15" cy="12.2" r="1.1" fill="currentColor" />
+              </svg>
+              <span class="topbar-action-label" data-i18n="discord.short">Discord</span>
+            </button>
+            <button
+              type="button"
+              class="tool-icon-btn topbar-action-btn"
+              id="btn-account"
+              data-i18n-title="login.connectTitle"
+              data-i18n-aria-label="login"
+              title="Google Drive sync"
+              aria-label="Sign in"
+              aria-haspopup="dialog"
+              aria-controls="account-dialog"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2.1" />
+                <path
+                  d="M5.5 19.2c1.6-3 3.7-4.5 6.5-4.5s4.9 1.5 6.5 4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.1"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span class="topbar-action-label" data-i18n="login" data-google-auth-label>Sign in</span>
+            </button>
+            <div class="tool-pop topbar-lang-pop" data-pop="lang-menu">
+              <button
+                type="button"
+                class="tool-icon-btn topbar-action-btn lang-menu-btn"
+                id="btn-lang-menu"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-controls="lang-menu-panel"
+                data-i18n-title="settings.language"
+                data-i18n-aria-label="settings.language"
+                title="Language / 言語"
+                aria-label="Language / 言語"
+              >
+                <span class="lang-code" data-lang-code>EN</span>
+                <span class="topbar-action-label" data-i18n="settings.language">Language / 言語</span>
+              </button>
+              <div class="tool-panel tool-panel--lang" id="lang-menu-panel" hidden role="listbox" aria-label="Language">
+                <button type="button" class="lang-option" data-set-locale="ja" role="option" aria-selected="false">
+                  日本語
+                </button>
+                <button type="button" class="lang-option" data-set-locale="en" role="option" aria-selected="false">
+                  English
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <main class="main-pane">
+          <section id="view-active" class="view is-active" data-i18n-aria-label="tab.active" aria-label="Active">
+            <div id="active-desktop-surface" class="desktop-surface">
+            <div class="view-tools">
+              <div class="inline-search" data-search="active">
+                <button
+                  type="button"
+                  class="tool-icon-btn"
+                  id="btn-active-search"
+                  aria-expanded="false"
+                  aria-controls="active-query"
+                  data-i18n-title="search"
+                  title="Search"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2" />
+                    <path d="M15.5 15.5 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  id="active-query"
+                  class="inline-search-input pop-input input-white"
+                  data-i18n-placeholder="search.placeholder"
+                  placeholder="Search"
+                  autocomplete="off"
+                  enterkeyhint="search"
+                />
+              </div>
+              <button
+                type="button"
+                class="tool-icon-btn"
+                id="btn-active-due-sort"
+                data-i18n-title="dueSort.on"
+                data-i18n-aria-label="dueSort.on"
+                title="Sort by due date"
+                aria-pressed="false"
+                aria-label="Sort by due date"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                  <circle cx="12" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="2.1" />
+                  <path d="M9 3.5h6M12 3.5v2.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" />
+                  <path d="M12 10v3.2l2.2 1.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="tool-icon-btn"
+                id="btn-active-plain-text"
+                data-i18n-title="plainText.on"
+                data-i18n-aria-label="plainText.on"
+                title="Turn on text mode"
+                aria-pressed="false"
+                aria-label="Turn on text mode"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                  <path d="M5 6.5h14M5 12h14M5 17.5h9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" />
+                </svg>
+              </button>
+              <span id="active-tool-hint" class="tool-hint" hidden></span>
+              <div class="tool-pop tool-pop--end" data-pop="settings-menu">
+                <button
+                  type="button"
+                  class="tool-icon-btn"
+                  id="btn-settings-menu"
+                  aria-expanded="false"
+                  aria-controls="settings-menu-panel"
+                  data-i18n-title="viewOptions"
+                  data-i18n-aria-label="viewOptions"
+                  title="View options"
+                  aria-label="View options"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path d="M5 7h5.2M13.8 7H19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" />
+                    <circle cx="12" cy="7" r="1.8" fill="none" stroke="currentColor" stroke-width="2.1" />
+                    <path d="M5 12h9.2M17.8 12H19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" />
+                    <circle cx="16" cy="12" r="1.8" fill="none" stroke="currentColor" stroke-width="2.1" />
+                    <path d="M5 17h2.2M10.8 17H19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" />
+                    <circle cx="9" cy="17" r="1.8" fill="none" stroke="currentColor" stroke-width="2.1" />
+                  </svg>
+                </button>
+                <div id="settings-menu-panel" class="tool-panel tool-panel--settings" hidden role="dialog" data-i18n-aria-label="viewOptions" aria-label="View options">
+                  <div class="settings-section">
+                    <div class="settings-heading" id="progress-settings-label" data-i18n="settings.progress">Progress gauge</div>
+                    <select
+                      id="progress-mode-select"
+                      class="settings-select pop-input input-white"
+                      aria-labelledby="progress-settings-label"
+                    >
+                      <option value="off" data-i18n="settings.progress.off">Hidden</option>
+                      <option value="all" data-i18n="settings.progress.all">Shown</option>
+                    </select>
+                  </div>
+                  <div class="settings-section">
+                    <div class="settings-check-row">
+                      <label class="settings-check">
+                        <input type="checkbox" id="category-mode" />
+                        <span data-i18n="settings.category">Enable categories</span>
+                      </label>
+                      <button
+                        type="button"
+                        id="btn-category-help"
+                        class="settings-help-btn"
+                        data-i18n-title="settings.categoryHelp"
+                        data-i18n-aria-label="settings.categoryHelp"
+                        title="About categories"
+                        aria-label="About categories"
+                        aria-haspopup="dialog"
+                        aria-controls="category-help-dialog"
+                      >
+                        ?
+                      </button>
+                    </div>
+                  </div>
+                  <div class="settings-section">
+                    <div class="settings-heading" data-i18n="settings.dueSort">Due-date sort view</div>
+                    <label class="settings-check">
+                      <input type="checkbox" id="due-keep-tree" />
+                      <span data-i18n="settings.dueKeepTree">Keep parent–child structure</span>
+                    </label>
+                    <label class="settings-check">
+                      <input type="checkbox" id="due-show-undated" />
+                      <span data-i18n="settings.dueShowUndated">Also show tasks without a due date</span>
+                    </label>
+                  </div>
+                  <div class="settings-section">
+                    <div class="settings-heading" data-i18n="settings.titleDisplay">Task display</div>
+                    <label class="settings-check">
+                      <input type="checkbox" id="title-wrap" />
+                      <span data-i18n="settings.titleWrap">Wrap long titles</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="zoom-bar" class="zoom-bar" hidden>
+              <button type="button" id="btn-zoom-out" class="pop-btn pop-btn--sm zoom-out-btn" data-i18n-title="zoom.outTitle" data-i18n="zoom.out" title="Back to full outline">
+                All
+              </button>
+              <div id="zoom-crumbs" class="zoom-crumbs" data-i18n-aria-label="zoom.crumbs" aria-label="Focus path"></div>
+            </div>
+            <aside class="starter-guide" aria-label="Getting started">
+              <span data-i18n="starter.hint">Welcome to Taskliner. Let’s learn the basics.</span>
+              <a href="./tutorial/" class="starter-tutorial-btn" data-i18n="starter.tutorial">Open tutorial</a>
+              <button type="button" id="btn-starter-dismiss" class="starter-dismiss-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">×</button>
+            </aside>
+            <div id="active-outline" class="outline" tabindex="0"></div>
+            <button type="button" id="btn-mobile-add" class="mobile-add-btn pop-btn pop-btn--cta" data-i18n="mobile.addItem">Add item</button>
+            </div>
+
+            <section id="mobile-active-surface" class="mobile-active-surface" aria-labelledby="mobile-current-heading" hidden inert>
+              <header class="mobile-branch-header">
+                <button type="button" id="btn-mobile-back" class="mobile-header-btn mobile-header-btn--back" data-i18n-aria-label="mobile.back" aria-label="Back" hidden>
+                  <svg class="mobile-header-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="mobile-heading-group">
+                  <h2 id="mobile-current-heading" class="mobile-current-heading" hidden></h2>
+                  <nav id="mobile-breadcrumbs" class="mobile-breadcrumbs" data-i18n-aria-label="mobile.breadcrumbs" aria-label="Outline path"></nav>
+                </div>
+                <div class="mobile-branch-actions">
+                  <button type="button" id="btn-mobile-display-mode" class="mobile-header-btn" data-i18n-aria-label="mobile.displayBranch" aria-label="Show this level only" aria-pressed="false">
+                    <svg class="mobile-header-icon mobile-display-icon--outline" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M8 12h12M12 18h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4" cy="12" r="1.4" fill="currentColor"/><circle cx="8" cy="18" r="1.4" fill="currentColor"/></svg>
+                    <svg class="mobile-header-icon mobile-display-icon--branch" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                  <button type="button" id="btn-mobile-due-sort" class="mobile-header-btn" data-i18n-aria-label="dueSort.on" aria-label="Sort by due date" aria-pressed="false">
+                    <svg class="mobile-header-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M4 10h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                  <button type="button" id="btn-mobile-search" class="mobile-header-btn" data-i18n-aria-label="search" aria-label="Search">
+                    <svg class="mobile-header-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                  <button type="button" id="btn-mobile-reorder" class="mobile-header-btn" data-i18n-aria-label="mobile.reorder" aria-label="Reorder items">
+                    <span class="mobile-header-glyph" aria-hidden="true">↕</span>
+                  </button>
+                </div>
+              </header>
+
+              <div id="mobile-add-parent-bar" class="mobile-add-parent-bar" hidden>
+                <div class="mobile-add-parent-copy">
+                  <strong data-i18n="mobile.addParentPickTitle">追加先を選ぶ</strong>
+                  <span data-i18n="mobile.addParentPickHint">追加したい親の項目をタップ</span>
+                </div>
+                <div class="mobile-add-parent-actions">
+                  <button type="button" id="btn-mobile-add-parent-root" class="pop-btn pop-btn--sm" data-i18n="mobile.moveTopLevel">最上位</button>
+                  <button type="button" id="btn-mobile-add-parent-cancel" class="pop-btn pop-btn--sm" data-i18n="close">Close</button>
+                </div>
+              </div>
+
+              <div id="mobile-search-bar" class="mobile-search-bar" hidden>
+                <input id="mobile-search-query" class="pop-input input-white" type="search" autocomplete="off" enterkeyhint="search" data-i18n-placeholder="search.placeholder" placeholder="Search" />
+                <button type="button" id="btn-mobile-search-close" class="pop-btn pop-btn--sm" data-i18n="close">Close</button>
+              </div>
+
+              <div id="mobile-reorder-header" class="mobile-reorder-header" hidden>
+                <strong data-i18n="mobile.reorderTitle">Reorder items</strong>
+                <button type="button" id="btn-mobile-reorder-done" class="pop-btn pop-btn--sm" data-i18n="mobile.reorderDone">Done</button>
+              </div>
+
+              <div id="mobile-screen-stack" class="mobile-screen-stack">
+                <div id="mobile-active-list" class="mobile-active-list mobile-screen" role="list"></div>
+              </div>
+
+              <button type="button" id="btn-mobile-v2-add" class="mobile-v2-add-btn pop-btn pop-btn--cta" data-i18n="mobile.addItem">Add item</button>
+              <form id="mobile-quick-add" class="mobile-quick-add" hidden>
+                <div id="mobile-add-under" class="mobile-add-under"></div>
+                <div class="mobile-quick-add-row">
+                  <input id="mobile-quick-add-input" class="pop-input input-white" type="text" autocomplete="off" enterkeyhint="enter" data-i18n-placeholder="mobile.quickAddPlaceholder" placeholder="Write an item…" />
+                  <button type="submit" class="pop-btn pop-btn--cta" data-i18n="mobile.add">Add</button>
+                </div>
+                <button type="button" id="btn-mobile-quick-add-close" class="mobile-quick-add-close" data-i18n-aria-label="mobile.quickAddClose" aria-label="Close input">
+                  <span class="mobile-quick-add-close-icon" aria-hidden="true">×</span>
+                  <span data-i18n="mobile.quickAddClose">Close input</span>
+                </button>
+              </form>
+            </section>
+          </section>
+
+          <section id="view-archive" class="view" data-i18n-aria-label="tab.archive" aria-label="Archive" hidden>
+            <div class="view-tools">
+              <div class="inline-search" data-search="archive">
+                <button
+                  type="button"
+                  class="tool-icon-btn"
+                  id="btn-archive-search"
+                  aria-expanded="false"
+                  aria-controls="archive-query"
+                  data-i18n-title="search"
+                  title="Search"
+                >
+                  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                    <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
+                    <path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  id="archive-query"
+                  class="inline-search-input pop-input input-white"
+                  data-i18n-placeholder="search.placeholder"
+                  placeholder="Search"
+                  autocomplete="off"
+                  enterkeyhint="search"
+                />
+              </div>
+              <div class="tool-pop" data-pop="archive-filter">
+                <button
+                  type="button"
+                  class="tool-icon-btn"
+                  id="btn-archive-filter"
+                  aria-expanded="false"
+                  aria-controls="archive-filter-panel"
+                  data-i18n-title="archive.filter"
+                  title="Filter & sort"
+                >
+                  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                    <path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </button>
+                <div id="archive-filter-panel" class="tool-panel tool-panel--wide" hidden>
+                  <div class="archive-filter-row">
+                    <span class="filter-label" data-i18n="archive.period">Completed</span>
+                    <div class="archive-chips" id="archive-period" role="group" data-i18n-aria-label="archive.period" aria-label="Completed">
+                      <button type="button" class="filter-chip is-active" data-period="all" data-i18n="archive.period.all">All</button>
+                      <button type="button" class="filter-chip" data-period="today" data-i18n="archive.period.today">Today</button>
+                      <button type="button" class="filter-chip" data-period="week" data-i18n="archive.period.week">This week</button>
+                      <button type="button" class="filter-chip" data-period="month" data-i18n="archive.period.month">This month</button>
+                      <button type="button" class="filter-chip" data-period="custom" data-i18n="archive.period.custom">Custom range</button>
+                    </div>
+                  </div>
+                  <div id="archive-range-panel" class="archive-range-panel" hidden>
+                    <label class="range-field">
+                      <span data-i18n="archive.from">From</span>
+                      <input type="date" id="archive-from" class="pop-input input-white range-date" />
+                    </label>
+                    <span class="range-tilde">〜</span>
+                    <label class="range-field">
+                      <span data-i18n="archive.to">To</span>
+                      <input type="date" id="archive-to" class="pop-input input-white range-date" />
+                    </label>
+                  </div>
+                  <div class="archive-filter-row">
+                    <span class="filter-label" data-i18n="archive.sort">Sort</span>
+                    <div class="archive-chips" id="archive-sort-chips" role="group" data-i18n-aria-label="archive.sort" aria-label="Sort">
+                      <button type="button" class="filter-chip is-active" data-sort="completed-desc" data-i18n="archive.sort.completedDesc">Newest completed</button>
+                      <button type="button" class="filter-chip" data-sort="completed-asc" data-i18n="archive.sort.completedAsc">Oldest completed</button>
+                      <button type="button" class="filter-chip" data-sort="title-asc" data-i18n="archive.sort.titleAsc">Name</button>
+                    </div>
+                  </div>
+                  <div class="archive-status tool-status">
+                    <span id="archive-count" class="archive-count"></span>
+                    <button type="button" id="archive-clear-filters" class="pop-btn pop-btn--sm" hidden data-i18n="archive.clearFilters">
+                      Clear filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <span id="archive-tool-hint" class="tool-hint" hidden></span>
+            </div>
+            <div id="archive-outline" class="outline archive-outline" tabindex="0"></div>
+            <button type="button" id="archive-load-more" class="pop-btn pop-btn--sm archive-load-more" hidden data-i18n="archive.loadMore">
+              Load more
+            </button>
+          </section>
+        </main>
+
+        <aside class="detail-pane pop-panel is-empty" data-i18n-aria-label="detail" aria-label="Details">
+          <button
+            type="button"
+            id="detail-sheet-handle"
+            class="detail-sheet-handle"
+            data-i18n-aria-label="detail.sheetExpand"
+            aria-label="Expand detail sheet"
+            hidden
+          >
+            <span class="detail-sheet-handle-bar" aria-hidden="true"></span>
+          </button>
+          <div id="detail-empty" class="detail-empty">
+            <p data-i18n="detail.empty">Select an item to write a detail note here.</p>
+          </div>
+          <div id="detail-body" class="detail-body" hidden>
+            <div class="detail-head">
+              <div id="detail-category" class="detail-category" hidden></div>
+              <div class="detail-title-row">
+                <input id="detail-title" class="detail-title input-white" type="text" />
+                <button
+                  type="button"
+                  id="btn-zoom-in"
+                  class="focus-chip-btn"
+                  data-i18n-title="detail.focusTitle"
+                  data-i18n-aria-label="detail.focusAria"
+                  title="Show only this item and its children"
+                  aria-label="Focus"
+                  hidden
+                >
+                  Focus
+                </button>
+                <button
+                  type="button"
+                  id="btn-detail-close"
+                  class="detail-close-btn"
+                  data-i18n-title="close"
+                  data-i18n-aria-label="close"
+                  title="Close"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+              <div class="detail-meta" id="detail-meta"></div>
+            </div>
+            <div class="detail-due-row">
+              <label class="field-label" for="detail-due" data-i18n="detail.due">Due</label>
+              <div class="detail-due-controls">
+                <input id="detail-due" class="pop-input input-white range-date" type="date" />
+                <button type="button" id="detail-due-clear" class="pop-btn pop-btn--sm" hidden data-i18n="detail.clear">Clear</button>
+              </div>
+            </div>
+            <label class="field-label detail-note-label" for="detail-note" data-i18n="detail.note">Notes</label>
+            <textarea id="detail-note" class="detail-note pop-input input-white" spellcheck="false"></textarea>
+            <div
+              id="mobile-move-actions"
+              class="mobile-move-actions"
+              data-i18n-aria-label="detail.moveActions"
+              aria-label="Move task"
+              hidden
+            >
+              <button type="button" id="btn-outdent" class="pop-btn pop-btn--sm" data-i18n="detail.moveOutdent">親から外す</button>
+              <button type="button" id="btn-indent" class="pop-btn pop-btn--sm" data-i18n="detail.moveIndent">前の項目の子にする</button>
+              <button type="button" id="btn-move-up" class="pop-btn pop-btn--sm" data-i18n="detail.moveUp">同じ階層で上へ</button>
+              <button type="button" id="btn-move-down" class="pop-btn pop-btn--sm" data-i18n="detail.moveDown">同じ階層で下へ</button>
+            </div>
+            <div class="detail-actions">
+              <button type="button" id="btn-toggle-done" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="detail.complete">Done</button>
+              <button type="button" id="btn-delete" class="pop-btn pop-btn--sm danger-btn" data-i18n="detail.delete">Delete</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <div id="detail-sheet-backdrop" class="detail-sheet-backdrop" hidden></div>
+    </div>
+
+    <div id="mobile-row-menu-backdrop" class="mobile-action-sheet-backdrop" hidden></div>
+    <section id="mobile-row-menu-dialog" class="mobile-action-sheet" role="dialog" aria-modal="false" aria-labelledby="mobile-row-menu-title" hidden>
+      <div class="mobile-action-dialog-head">
+        <h2 id="mobile-row-menu-title"></h2>
+        <button type="button" id="btn-mobile-row-menu-close" class="tool-icon-btn" data-i18n-aria-label="close" aria-label="Close">×</button>
+      </div>
+      <div class="mobile-action-list mobile-action-list--grid">
+        <button type="button" data-mobile-row-action="details" data-i18n="mobile.details">Details</button>
+        <button type="button" data-mobile-row-action="move" data-i18n="mobile.move">Move</button>
+        <button type="button" data-mobile-row-action="complete" data-i18n="detail.complete" hidden>Done</button>
+        <button type="button" data-mobile-row-action="delete" class="danger-btn" data-i18n="detail.delete">Delete</button>
+      </div>
+    </section>
+
+    <dialog id="mobile-move-dialog" class="mobile-action-dialog mobile-move-dialog" aria-labelledby="mobile-move-title">
+      <div class="mobile-action-dialog-head">
+        <h2 id="mobile-move-title" data-i18n="mobile.moveTitle">Move item</h2>
+        <button type="button" id="btn-mobile-move-close" class="tool-icon-btn" data-i18n-aria-label="close" aria-label="Close">×</button>
+      </div>
+      <input id="mobile-move-search" class="pop-input input-white" type="search" autocomplete="off" data-i18n-placeholder="mobile.moveSearchPlaceholder" placeholder="Search destinations…" />
+      <div id="mobile-move-list" class="mobile-move-list"></div>
+    </dialog>
+
+    <dialog id="about-dialog" class="help-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="about.title">About Taskliner</h2>
+        <button type="button" id="btn-about-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="help-dialog-body about-dialog-body">
+        <p class="about-dialog-copy" data-i18n="about.description">See it all. Dive into one.</p>
+        <nav class="about-dialog-links" aria-label="About links">
+          <a href="./privacy/" data-i18n="about.privacy">Privacy Policy</a>
+          <a href="./terms/" data-i18n="about.terms">Terms of Service</a>
+          <a href="./data-and-sync/" data-i18n="about.dataSync">Data &amp; Sync</a>
+          <a href="./contact/" data-i18n="about.contact">Contact</a>
+        </nav>
+      </div>
+    </dialog>
+
+    <dialog id="discord-dialog" class="help-dialog discord-dialog" aria-labelledby="discord-dialog-title">
+      <div class="help-dialog-head">
+        <h2 id="discord-dialog-title" class="help-dialog-title" data-i18n="discord.heading">Share task completions to Discord</h2>
+        <button type="button" id="btn-discord-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">×</button>
+      </div>
+      <div class="help-dialog-body discord-dialog-body">
+        <p class="settings-help-text discord-description" data-i18n="discord.description">When you finish a task, Taskliner can share it to a channel you choose.</p>
+        <div class="discord-preview" aria-hidden="true">
+          <span class="discord-preview-icon">✓</span>
+          <span data-i18n="discord.preview">Task completed · 1 completion today</span>
+        </div>
+        <details class="discord-setup-guide">
+          <summary data-i18n="discord.setup.summary">Where do I get a Webhook URL?</summary>
+          <ol>
+            <li data-i18n="discord.setup.step1">Open the destination channel settings</li>
+            <li data-i18n="discord.setup.step2">Choose Integrations → Webhooks → New Webhook</li>
+            <li data-i18n="discord.setup.step3">Copy the Webhook URL and paste it below</li>
+          </ol>
+        </details>
+        <label class="settings-field">
+          <span class="settings-field-label" data-i18n="discord.webhookUrl">Webhook URL</span>
+          <input id="discord-webhook-url" class="pop-input input-white settings-input" type="password" autocomplete="off" spellcheck="false" />
+        </label>
+        <div class="discord-actions">
+          <button type="button" id="discord-test" class="pop-btn pop-btn--sm" data-i18n="discord.test">Test connection</button>
+          <span id="discord-status" class="settings-status" aria-live="polite"></span>
+        </div>
+        <div id="discord-options" class="discord-options" hidden>
+          <label class="settings-check discord-enable-check">
+            <input type="checkbox" id="discord-enabled" />
+            <span data-i18n="discord.enable">Share task completions to Discord</span>
+          </label>
+          <label class="settings-field">
+            <span class="settings-field-label" data-i18n="discord.share">What to include</span>
+            <select id="discord-visibility" class="settings-select pop-input input-white">
+              <option value="hidden" data-i18n="discord.visibility.hidden">Progress only</option>
+              <option value="category" data-i18n="discord.visibility.category">Category only</option>
+              <option value="title" data-i18n="discord.visibility.title">Task title</option>
+            </select>
+          </label>
+          <label class="settings-field">
+            <span class="settings-field-label" data-i18n="discord.displayName">Display name (optional)</span>
+            <input id="discord-display-name" class="pop-input input-white settings-input" type="text" maxlength="40" autocomplete="off" />
+          </label>
+          <label class="settings-check">
+            <input type="checkbox" id="discord-automatic" />
+            <span data-i18n="discord.automatic">Post automatically after completion</span>
+          </label>
+          <div id="discord-counts" class="settings-status" aria-live="polite"></div>
+          <div class="discord-actions discord-actions--secondary">
+            <button type="button" id="discord-retry" class="pop-btn pop-btn--sm" data-i18n="discord.retry">Retry failed posts</button>
+            <button type="button" id="discord-disconnect" class="pop-btn pop-btn--sm pop-btn--danger" data-i18n="discord.disconnect">Disconnect Discord</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="sync-encryption-explainer" class="help-dialog sync-dialog" aria-labelledby="sync-encryption-explainer-title">
+      <div class="help-dialog-head">
+        <h2 id="sync-encryption-explainer-title" class="help-dialog-title" data-i18n="e2ee.explainerTitle">暗号化同期を設定します</h2>
+        <button type="button" id="btn-sync-encryption-explainer-close" class="tool-icon-btn" aria-label="Close">×</button>
+      </div>
+      <div class="help-dialog-body">
+        <p class="about-dialog-copy" data-i18n="e2ee.explainerDescription">Tasklinerはタスクを暗号化してからGoogle Driveへ保存します。パスキーと復旧用QRを準備します。</p>
+        <p class="settings-help-text" data-i18n="e2ee.recoveryWarning">すべての解除方法を失うと、同期データを復元できません。</p>
+        <div class="sync-dialog-actions">
+          <button type="button" id="btn-sync-encryption-explainer-cancel" class="pop-btn pop-btn--sm" data-i18n="e2ee.explainerCancel">同期せずに戻る</button>
+          <button type="button" id="btn-sync-encryption-explainer-accept" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="e2ee.explainerAccept">暗号化同期を設定する</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="account-dialog" class="help-dialog sync-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="login.sync.title">Account and sync</h2>
+        <button type="button" id="btn-account-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="help-dialog-body">
+        <div id="sync-overview" class="sync-overview" data-state="disconnected">
+          <span class="sync-overview-icon" aria-hidden="true"></span>
+          <div>
+            <p id="sync-overview-kicker" class="sync-overview-kicker" data-i18n="sync.overview.localKicker">この端末だけ</p>
+            <h3 id="sync-overview-title" class="sync-overview-title" data-i18n="sync.overview.localTitle">Google Drive同期はオフです</h3>
+            <p id="sync-overview-description" class="sync-overview-description" data-i18n="sync.overview.localDescription">タスクはこの端末に保存されています。Googleへ接続すると他の端末でも使えます。</p>
+          </div>
+        </div>
+        <button type="button" id="btn-sync-primary" class="pop-btn pop-btn--cta sync-primary-button" data-i18n="login.sync.connect">Googleに接続</button>
+        <p id="sync-status" class="settings-status sync-status" aria-live="polite"></p>
+        <details id="sync-manage-details" class="sync-manage" hidden>
+          <summary data-i18n="sync.manage.title">同期の管理</summary>
+          <div class="sync-manage-body">
+            <button type="button" id="btn-sync-manage-add-device" class="sync-manage-card">
+              <span class="sync-manage-card-title" data-i18n="sync.manage.addDevice">別の端末を同期する</span>
+              <span class="sync-manage-card-copy" data-i18n="sync.manage.addDeviceDescription">この端末に表示したQRを新しい端末で読み取ります</span>
+            </button>
+            <button type="button" id="btn-sync-manage-recovery" class="sync-manage-card">
+              <span class="sync-manage-card-title" data-i18n="sync.manage.recovery">復旧キーを作り直す</span>
+              <span class="sync-manage-card-copy" data-i18n="sync.manage.recoveryDescription">端末をすべて失った場合に備えて保管します</span>
+            </button>
+            <button type="button" id="btn-sync-manage-now" class="sync-manage-card">
+              <span class="sync-manage-card-title" data-i18n="login.sync.syncNow">今すぐ同期</span>
+              <span class="sync-manage-card-copy" data-i18n="sync.manage.syncNowDescription">通常は自動で同期されます</span>
+            </button>
+            <details class="sync-danger-zone">
+              <summary data-i18n="sync.manage.danger">ログアウト・データ削除</summary>
+              <p class="settings-help-text" data-i18n="sync.manage.dangerDescription">ログアウトしてもこの端末のタスクは残ります。同期データ削除はすべての端末に影響します。</p>
+              <div class="sync-dialog-actions">
+                <button type="button" id="btn-sync-disconnect" class="pop-btn pop-btn--sm" data-i18n="login.sync.disconnect">ログアウト</button>
+                <button type="button" id="btn-sync-delete-remote" class="pop-btn pop-btn--sm pop-btn--danger" data-i18n="login.sync.deleteRemote">同期データを削除</button>
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+    </dialog>
+
+    <dialog id="device-link-dialog" class="help-dialog device-link-dialog" aria-labelledby="device-link-dialog-title">
+      <div class="help-dialog-head">
+        <h2 id="device-link-dialog-title" class="help-dialog-title" data-i18n="deviceLink.title">この端末を同期する</h2>
+        <button type="button" id="btn-device-link-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">×</button>
+      </div>
+      <div class="help-dialog-body">
+        <ol id="device-link-steps" class="device-link-steps" aria-label="Setup progress">
+          <li data-device-link-step="account"><span>1</span><b data-i18n="deviceLink.step.account">Google接続</b></li>
+          <li data-device-link-step="verify"><span>2</span><b data-i18n="deviceLink.step.verify">端末の確認</b></li>
+          <li data-device-link-step="sync"><span>3</span><b data-i18n="deviceLink.step.sync">同期開始</b></li>
+        </ol>
+        <section class="device-link-stage" aria-live="polite">
+          <p id="device-link-kicker" class="sync-overview-kicker"></p>
+          <h3 id="device-link-stage-title" class="device-link-stage-title"></h3>
+          <p id="device-link-description" class="device-link-description"></p>
+          <div id="device-link-busy" class="pairing-busy" role="status" hidden>
+            <span class="pairing-spinner" aria-hidden="true"></span>
+            <span id="device-link-busy-text"></span>
+          </div>
+          <p id="device-link-status" class="settings-status device-link-status"></p>
+        </section>
+        <div id="device-link-choices" class="device-link-choices" hidden>
+          <button type="button" id="btn-device-link-existing" class="sync-choice-card sync-choice-card--recommended">
+            <span class="sync-choice-label" data-i18n="deviceLink.recommended">おすすめ</span>
+            <span class="sync-manage-card-title" data-i18n="deviceLink.existing">同期済み端末で承認する</span>
+            <span class="sync-manage-card-copy" data-i18n="deviceLink.existingDescription">その端末で「アカウント → 別の端末を同期する」を開きます</span>
+          </button>
+          <button type="button" id="btn-device-link-passkey" class="sync-choice-card">
+            <span class="sync-manage-card-title" data-i18n="deviceLink.passkey">パスキーを試す</span>
+            <span class="sync-manage-card-copy" data-i18n="deviceLink.passkeyDescription">この端末で利用できる同期済みパスキーを使います</span>
+          </button>
+          <details class="device-link-recovery-options">
+            <summary data-i18n="deviceLink.recoveryMethods">復旧キーを使う</summary>
+            <div class="sync-dialog-actions">
+              <button type="button" id="btn-device-link-recovery-file" class="pop-btn pop-btn--sm" data-i18n="e2ee.unlockRecovery">復旧ファイルを選ぶ</button>
+              <button type="button" id="btn-device-link-recovery-code" class="pop-btn pop-btn--sm" data-i18n="e2ee.unlockRecoveryCode">復旧キーを貼り付け</button>
+            </div>
+          </details>
+        </div>
+        <form id="device-link-code-form" class="device-link-code-form" hidden>
+          <ol class="device-link-instructions">
+            <li data-i18n="deviceLink.codeStep1">同期済み端末でTasklinerを開く</li>
+            <li data-i18n="deviceLink.codeStep2">「アカウント」→「別の端末を同期する」を開く</li>
+            <li data-i18n="deviceLink.codeStep3">QRをこの端末のカメラで読むか、招待コードを下に入力する</li>
+          </ol>
+          <label for="device-link-invite-code" data-i18n="deviceLink.codeLabel">既存端末に表示されている招待コード</label>
+          <input type="text" id="device-link-invite-code" class="pop-input input-white" autocomplete="one-time-code" spellcheck="false" />
+          <button type="submit" id="btn-device-link-request" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="deviceLink.request">承認を依頼する</button>
+        </form>
+        <div id="device-link-confirm" class="device-link-confirm" hidden>
+          <p data-i18n="deviceLink.confirmDescription">既存端末と同じ確認コードなら、この端末で同期を開始します。</p>
+          <p id="device-link-words" class="pairing-words"></p>
+          <div class="sync-dialog-actions">
+            <button type="button" id="btn-device-link-confirm" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="deviceLink.confirm">確認コードが同じ</button>
+            <button type="button" id="btn-device-link-reject" class="pop-btn pop-btn--sm" data-i18n="deviceLink.reject">一致しない</button>
+          </div>
+        </div>
+        <button type="button" id="btn-device-link-primary" class="pop-btn pop-btn--cta sync-primary-button" hidden></button>
+        <button type="button" id="btn-device-link-use-local" class="device-link-local-button" data-i18n="deviceLink.useLocal" hidden>この端末では同期せず使う</button>
+        <input type="file" id="device-link-recovery-input" accept="application/json,.json" hidden />
+      </div>
+    </dialog>
+
+    <dialog id="pairing-dialog" class="help-dialog pairing-dialog" aria-labelledby="pairing-title">
+      <div class="help-dialog-head">
+        <h2 id="pairing-title" class="help-dialog-title" data-i18n="pairing.title">Add a device</h2>
+        <button type="button" id="btn-pairing-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">×</button>
+      </div>
+      <div class="help-dialog-body">
+        <ol id="pairing-steps" class="device-link-steps device-link-steps--compact" aria-label="Setup progress">
+          <li data-pairing-step="invite"><span>1</span><b data-i18n="pairing.step.open">招待を表示</b></li>
+          <li data-pairing-step="verify"><span>2</span><b data-i18n="pairing.step.approve">コードを確認</b></li>
+          <li data-pairing-step="finish"><span>3</span><b data-i18n="pairing.step.finish">追加完了</b></li>
+        </ol>
+        <div id="pairing-busy" class="pairing-busy" role="status" hidden>
+          <span class="pairing-spinner" aria-hidden="true"></span>
+          <span id="pairing-busy-text"></span>
+        </div>
+        <p id="pairing-status" class="settings-status pairing-stage-status" aria-live="polite"></p>
+        <section id="pairing-invite" class="pairing-phase-panel" hidden>
+          <p class="settings-help-text" data-i18n="pairing.description">新しい端末のカメラでこのQRコードを読み取ってください。Google接続後は自動で承認待ちになります。</p>
+          <div id="pairing-qr" class="pairing-qr" aria-hidden="true"></div>
+          <p class="pairing-code-label" data-i18n="pairing.manualCode">カメラを使えない場合の招待コード</p>
+          <p id="pairing-code" class="pairing-code"></p>
+        </section>
+        <section id="pairing-request" class="pairing-request pairing-phase-panel" hidden>
+          <p id="pairing-device-name"></p>
+          <p id="pairing-review-description" class="settings-help-text"></p>
+          <p id="pairing-words" class="pairing-words"></p>
+          <div id="pairing-review-actions" class="sync-dialog-actions">
+            <button type="button" id="btn-pairing-approve" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="pairing.approve">この端末を承認</button>
+            <button type="button" id="btn-pairing-cancel" class="pop-btn pop-btn--sm" data-i18n="pairing.cancel">キャンセル</button>
+          </div>
+        </section>
+        <section id="pairing-complete" class="pairing-complete pairing-phase-panel" hidden>
+          <span class="pairing-complete-mark" aria-hidden="true">✓</span>
+          <h3 data-i18n="pairing.completeTitle">新しい端末の同期が完了しました</h3>
+          <p data-i18n="pairing.completeDescription">両方の端末で変更が自動同期されます。この画面は閉じて大丈夫です。</p>
+          <button type="button" id="btn-pairing-done" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="pairing.done">完了</button>
+        </section>
+      </div>
+    </dialog>
+
+    <dialog id="recovery-dialog" class="help-dialog pairing-dialog" aria-labelledby="recovery-title">
+      <div class="help-dialog-head">
+        <h2 id="recovery-title" class="help-dialog-title" data-i18n="recovery.title">Save a recovery key</h2>
+        <button type="button" id="btn-recovery-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">×</button>
+      </div>
+      <div class="help-dialog-body">
+        <p class="settings-help-text" data-i18n="recovery.description">Keep one copy outside this browser. Anyone with it can unlock your synced tasks.</p>
+        <div id="recovery-qr" class="pairing-qr" aria-hidden="true"></div>
+        <textarea id="recovery-copy-value" class="pop-input input-white recovery-copy-value" readonly></textarea>
+        <div class="sync-dialog-actions e2ee-actions">
+          <button type="button" id="btn-recovery-download" class="pop-btn pop-btn--sm" data-i18n="recovery.download">Download file</button>
+          <button type="button" id="btn-recovery-copy" class="pop-btn pop-btn--sm" data-i18n="recovery.copy">Copy</button>
+          <button type="button" id="btn-recovery-saved" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="recovery.saved">I saved it</button>
+        </div>
+        <p id="recovery-status" class="settings-status" aria-live="polite"></p>
+      </div>
+    </dialog>
+
+    <dialog id="help-dialog" class="help-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="help.title">How to use</h2>
+        <button type="button" id="btn-help-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="help-dialog-body">
+        <div class="help-tutorial-bar">
+          <a
+            id="btn-open-tutorial"
+            class="help-tutorial-link"
+            href="./tutorial/"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="help.tutorial"
+          >
+            Tutorial
+          </a>
+        </div>
+        <section class="help-section help-section--desktop">
+          <div class="help-keys-group">
+            <h4 data-i18n="help.write">Write & edit</h4>
+            <p><kbd>Enter</kbd> <span data-i18n="help.write.enter">Add below (start = above / middle = split)</span></p>
+            <p><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> <span data-i18n="help.write.tab">Indent / outdent</span></p>
+            <p data-i18n="help.write.paste">Paste multiline Markdown as a tree</p>
+            <p><kbd>Ctrl+Enter</kbd> <span data-i18n="help.write.ctrlEnter">Complete / restore</span></p>
+            <p><kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Shift+Z</kbd> <span data-i18n="help.write.undo">Undo / redo</span></p>
+            <p><kbd>Ctrl+Delete</kbd> <span data-i18n="help.write.delete">Delete selected tasks</span></p>
+            <p><kbd>Esc</kbd> <span data-i18n="help.write.esc">Clear input & selection</span></p>
+          </div>
+          <div class="help-keys-group">
+            <h4 data-i18n="help.move">Move</h4>
+            <p><kbd>↑</kbd> <kbd>↓</kbd> <span data-i18n="help.move.ud">Previous / next item</span></p>
+            <p><kbd>Ctrl+←</kbd> <kbd>Ctrl+→</kbd> <span data-i18n="help.move.lr">Collapse / expand</span></p>
+            <p><kbd>Ctrl+↑</kbd> <kbd>Ctrl+↓</kbd> <span data-i18n="help.move.reorder">Reorder among siblings</span></p>
+            <p>⠿ <span data-i18n="help.move.drag">Drag: top = before / middle = child / bottom = after</span></p>
+          </div>
+          <div class="help-keys-group">
+            <h4 data-i18n="help.select">Select & export</h4>
+            <p><kbd>Shift+click</kbd> / <kbd>Shift+↑↓</kbd> <span data-i18n="help.select.range">Range select</span></p>
+            <p><kbd>Ctrl+C</kbd> <span data-i18n="help.select.copy">Copy as Markdown</span></p>
+            <p><kbd>Ctrl+.</kbd> <span data-i18n="help.select.focus">Focus / Esc steps back while focused</span></p>
+          </div>
+        </section>
+        <section class="help-section help-section--mobile">
+          <div class="help-keys-group">
+            <h4 data-i18n="help.mobile.list">Branch list</h4>
+            <p data-i18n="help.mobile.tap">Tap a row to open the branch inside it. Tap the pencil icon to edit it in place with the keyboard.</p>
+            <p data-i18n="help.mobile.toggle">Use ☷ to switch between branch and full-outline views</p>
+            <p data-i18n="help.mobile.drag">Use ↕ Reorder and drag the handle. Change parents from ⋯ → Move</p>
+          </div>
+          <div class="help-keys-group">
+            <h4 data-i18n="help.mobile.sheet">Add and details</h4>
+            <p data-i18n="help.mobile.sheetOpen">Add items repeatedly to the current branch with Add item</p>
+            <p data-i18n="help.mobile.sheetExpand">Open due date and notes from ⋯ → Details</p>
+            <p data-i18n="help.mobile.sheetClose">Close or Back returns to the same branch</p>
+            <p data-i18n="help.mobile.sheetBackdrop">Browser Back closes the open surface before leaving the branch</p>
+            <p data-i18n="help.mobile.sheetActions">Tap ⋯ or long-press a row to get Details, Move, Complete, and Delete.</p>
+          </div>
+        </section>
+      </div>
+    </dialog>
+
+    <dialog id="starter-dialog" class="help-dialog starter-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="starter.dialog.title">Welcome to Taskliner</h2>
+        <button type="button" id="btn-starter-dialog-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">×</button>
+      </div>
+      <div class="help-dialog-body starter-dialog-body">
+        <p class="settings-help-text" data-i18n="starter.dialog.copy">On phones, you manage tasks by walking branches.</p>
+        <ul class="starter-dialog-steps">
+          <li data-i18n="starter.dialog.step1">Use Add item to write in the current branch</li>
+          <li data-i18n="starter.dialog.step2">Tap a row to open that branch</li>
+          <li data-i18n="starter.dialog.step3">Use ⋯ for details, move, complete, and delete</li>
+        </ul>
+        <p class="settings-help-text starter-dialog-footnote" data-i18n="starter.dialog.helpHint">More tips are under “?” anytime.</p>
+        <div class="starter-dialog-actions">
+          <button type="button" id="btn-starter-dialog-later" class="pop-btn pop-btn--cta pop-btn--sm" data-i18n="starter.dialog.start">Get started</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="theme-dialog" class="help-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="theme">Theme</h2>
+        <button type="button" id="btn-theme-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="help-dialog-body">
+        <div class="theme-dialog-list" role="menu" data-i18n-aria-label="theme.list" aria-label="Themes">
+          <button type="button" class="theme-option is-active" data-theme-id="easygoing" role="menuitemradio" aria-checked="true">
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span class="theme-option-name" data-i18n="theme.easygoing">Easygoing Focus</span>
+          </button>
+          <button type="button" class="theme-option" data-theme-id="retro-pop" role="menuitemradio" aria-checked="false">
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span class="theme-option-name" data-i18n="theme.retroPop">Retro Pop</span>
+          </button>
+          <button type="button" class="theme-option" data-theme-id="formal" role="menuitemradio" aria-checked="false">
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span class="theme-option-name" data-i18n="theme.formal">Formal</span>
+          </button>
+          <button type="button" class="theme-option" data-theme-id="geek" role="menuitemradio" aria-checked="false">
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span class="theme-option-name" data-i18n="theme.geek">Code</span>
+          </button>
+          <button type="button" class="theme-option" data-theme-id="calm" role="menuitemradio" aria-checked="false">
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span class="theme-option-name" data-i18n="theme.calm">Soft</span>
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="file-dialog" class="help-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="file">File</h2>
+        <button type="button" id="btn-file-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="help-dialog-body">
+        <p class="settings-help-text file-dialog-description" data-i18n="file.description">Import and export tasks as JSON files.</p>
+        <div class="file-dialog-list">
+          <label class="menu-item file-menu-item file-dialog-item">
+            <span data-i18n="file.import">Import</span>
+            <input type="file" id="btn-import" accept="application/json,.json" hidden />
+          </label>
+          <button type="button" id="btn-export" class="menu-item file-dialog-item" data-i18n="file.export">Export</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="category-help-dialog" class="help-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" data-i18n="categoryHelp.title">Categories</h2>
+        <button type="button" id="btn-category-help-close" class="tool-icon-btn" data-i18n-title="close" data-i18n-aria-label="close" title="Close" aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="help-dialog-body">
+        <section class="help-section">
+          <div class="help-keys-group">
+            <p data-i18n="categoryHelp.p1">When enabled, top-level items are treated as categories.</p>
+            <p data-i18n="categoryHelp.p2">Categories themselves cannot be completed and show no progress gauge.</p>
+            <p data-i18n="categoryHelp.p3">In due-date order, category rows stay as headings while their tasks sort by due date.</p>
+            <p data-i18n="categoryHelp.p4">Opening a task under a category shows the category name above the detail title.</p>
+            <p data-i18n="categoryHelp.p5">Top-level items archived while categories were off still work as usual.</p>
+          </div>
+        </section>
+      </div>
+    </dialog>
+
+    <div id="toast-host" class="toast-host" aria-live="polite"></div>
+
+    <div id="guided-backdrop" class="guided-backdrop" hidden aria-hidden="true">
+      <span class="guided-dim guided-dim--top"></span>
+      <span class="guided-dim guided-dim--left"></span>
+      <span class="guided-dim guided-dim--right"></span>
+      <span class="guided-dim guided-dim--bottom"></span>
+    </div>
+    <div id="guided-coach-stack" class="guided-coach-stack" aria-live="polite"></div>
+    <dialog id="guided-data-dialog" class="help-dialog guided-data-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" id="guided-data-title">データについて</h2>
+      </div>
+      <div class="help-dialog-body">
+        <div class="guided-dialog-illustration guided-data-illustration" aria-hidden="true">
+          <svg viewBox="0 0 600 210" role="presentation">
+            <g class="guided-data-device guided-data-device--pc">
+              <rect x="18" y="38" width="158" height="96" rx="10" />
+              <rect class="guided-data-screen" x="30" y="50" width="134" height="70" rx="4" />
+              <path d="M72 151h50M84 134v17M110 134v17" />
+            </g>
+            <g class="guided-data-cloud">
+              <path d="M240 137h112a34 34 0 0 0 0-68 47 47 0 0 0-89-7 39 39 0 0 0-23 75Z" />
+              <path class="guided-data-cloud-mark" d="m283 106 10 10 21-24" />
+            </g>
+            <g class="guided-data-device guided-data-device--phone">
+              <rect x="438" y="28" width="84" height="146" rx="14" />
+              <rect class="guided-data-screen" x="450" y="47" width="60" height="98" rx="5" />
+              <path d="M470 158h20" />
+            </g>
+            <path class="guided-data-link" d="M181 97h47M365 97h65" />
+          </svg>
+        </div>
+        <div class="guided-dialog-copy">
+          <p><strong id="guided-data-lead">Tasklinerは登録不要で使えます。</strong></p>
+          <p id="guided-data-storage">タスクはあなたの端末内のサイトデータとして保存されます。</p>
+          <p id="guided-data-body">Googleアカウントを接続すると、端末間でタスクを同期できます。ブラウザのデータが消えても、同じGoogleアカウントを接続すれば復元できます。</p>
+        </div>
+        <div class="guided-data-actions">
+          <button type="button" id="guided-data-continue" class="pop-btn pop-btn--cta pop-btn--sm">次へ</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog id="guided-complete-dialog" class="help-dialog guided-complete-dialog">
+      <div class="help-dialog-head">
+        <h2 class="help-dialog-title" id="guided-complete-title">おめでとうございます！</h2>
+      </div>
+      <div class="help-dialog-body">
+        <div class="guided-dialog-illustration guided-complete-illustration" aria-hidden="true">
+          <span class="guided-complete-spark guided-complete-spark--left">✦</span>
+          <span class="guided-complete-emoji">🎉</span>
+          <span class="guided-complete-spark guided-complete-spark--right">★</span>
+          <span class="guided-complete-ribbon guided-complete-ribbon--left"></span>
+          <span class="guided-complete-ribbon guided-complete-ribbon--right"></span>
+        </div>
+        <p id="guided-complete-copy" class="guided-dialog-copy">Tasklinerを完璧に理解されましたね。
+それでは、実際に使ってみましょう！</p>
+        <div class="guided-complete-actions">
+          <button type="button" id="guided-complete-return" class="pop-btn pop-btn--cta pop-btn--sm">チュートリアルを終了</button>
+        </div>
+        <div class="guided-share" aria-labelledby="guided-share-label">
+          <p id="guided-share-label" class="guided-share-label">シェアする</p>
+          <div class="guided-share-actions">
+            <button type="button" id="guided-share-native" class="pop-btn pop-btn--sm guided-share-btn" hidden>共有</button>
+            <a id="guided-share-x" class="pop-btn pop-btn--sm guided-share-btn" target="_blank" rel="noopener noreferrer">X</a>
+            <a id="guided-share-facebook" class="pop-btn pop-btn--sm guided-share-btn" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a id="guided-share-whatsapp" class="pop-btn pop-btn--sm guided-share-btn" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            <button type="button" id="guided-share-copy" class="pop-btn pop-btn--sm guided-share-btn">リンクをコピー</button>
+          </div>
+          <p id="guided-share-status" class="guided-share-status" aria-live="polite"></p>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="./vendor/flatpickr/flatpickr.min.js"></script>
+    <script src="./vendor/flatpickr/l10n/ja.js"></script>
+    <script type="module" src="./app.js"></script>
+    <script type="module" src="./guided.js"></script>
+  </body>
+</html>

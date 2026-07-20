@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="How Taskliner stores local data and protects optional Google Drive sync with end-to-end encryption." />
+    <title>Data &amp; Sync — Taskliner</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../theme.css" />
+    <link rel="stylesheet" href="../site.css" />
+  </head>
+  <body class="site-page pop-root pop-dots">
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="site-brand" href="../">Taskliner</a>
+        <nav class="site-nav" aria-label="Site">
+          <a href="../">Open app</a>
+          <a href="../privacy/">Privacy</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </header>
+      <main class="site-main site-content">
+        <p class="site-kicker">Data</p>
+        <h1>Data &amp; Sync</h1>
+          <p class="site-meta">Current release: local-first with optional end-to-end encrypted Google Drive sync</p>
+
+        <div class="site-callout">
+          <strong>Google Drive sync is available when you turn it on.</strong>
+          Taskliner requests only the <code>openid</code>, <code>email</code>, and <code>drive.appdata</code> permissions. It stores end-to-end encrypted device files in Google Drive’s private <code>appDataFolder</code>. Ordinary Drive files are never requested.
+        </div>
+
+        <h2>Where your data lives now</h2>
+        <ul>
+          <li>Taskliner stores task content and settings in your browser’s IndexedDB.</li>
+          <li>The legacy <code>localStorage["taskliner-v1"]</code> copy is retained as a migration safety net.</li>
+          <li>Taskliner does not store task content in its D1/KV database. Cloudflare Pages Functions relay encrypted sync artifacts and keep only the encrypted OAuth refresh token plus non-secret account metadata.</li>
+          <li>Offline reload is supported after the app shell has been cached by your browser.</li>
+        </ul>
+
+        <h2>Optional Discord completion sharing</h2>
+        <p>Discord sharing is opt-in. When enabled, the browser sends only the completion message allowed by your selected visibility level directly to your own Discord Incoming Webhook. The Taskliner operator does not receive or relay the post.</p>
+        <p>The Webhook URL is not part of the task document or JSON export. It remains local when Google sync is off; when sync is on, it is shared only inside an encrypted setting. Pending and failed completion reports always remain local. Disconnecting Discord shares an encrypted deletion marker and clears that device’s pending reports.</p>
+
+        <h2>Make a backup</h2>
+        <ol>
+          <li>Open the menu in the top-right corner.</li>
+          <li>Choose File, then Export (.json).</li>
+          <li>Keep the downloaded JSON file somewhere safe.</li>
+        </ol>
+        <p>To restore a backup, open File, choose Import (.json), and select the exported file. Import replaces the current document, so export the current document first if you may need it.</p>
+
+        <h2>Deleting local data</h2>
+        <p>Use your browser’s site-data or storage settings to delete Taskliner data. This can remove the IndexedDB document and the legacy local copy. Export first if you want to preserve the document.</p>
+
+        <h2>Google Drive sync</h2>
+        <p>Open the account icon and choose Connect Google. On the first synchronized device, Taskliner creates a workspace encryption key and a Taskliner passkey. No passphrase is required. If the browser does not return a WebAuthn PRF result, you must save the generated recovery file before sync can start.</p>
+        <p>The browser encrypts task state with AES-256-GCM before upload. Cloudflare Pages Functions relays ciphertext and outer identifiers but does not receive task plaintext, the workspace key, or Discord Webhook URLs. It stores the Google account identifier and email, the encrypted OAuth refresh token, and non-secret migration metadata. Google Drive receives encrypted artifacts only.</p>
+        <p>On a new device, sign in with the same Google account and unlock with the synchronized Taskliner passkey. If that is unavailable, approve the new device from an existing device using the QR flow or the PC code, or import the recovery file. After unlock, that browser stores a locally wrapped key and returns to automatic sync without requiring biometrics on each visit.</p>
+        <p>If every approved device, usable passkey, and recovery file is lost, the synchronized data cannot be recovered by Taskliner, Google, or the operator. Keep a JSON export for task backup and store the recovery file separately when you rely on Drive sync.</p>
+        <p>Local IndexedDB task data is not encrypted by this feature. End-to-end encryption protects Drive data and the sync path, not an unlocked browser profile, compromised device, or malicious script running after unlock.</p>
+        <p>Disconnecting removes the Taskliner session but leaves local and Drive data intact. Use “Disconnect Google everywhere” when you also want Taskliner’s stored refresh token and account record revoked and removed. Use the separate Drive data deletion action when you want to remove Taskliner’s sync files from Google Drive. After deletion, sync pauses until you explicitly confirm a new upload.</p>
+      </main>
+      <footer class="site-footer">
+        <span>Taskliner · Data &amp; Sync</span>
+        <nav aria-label="Footer">
+          <a href="../privacy/">Privacy</a>
+          <a href="../terms/">Terms</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </footer>
+    </div>
+  </body>
+</html>

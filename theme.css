@@ -1,0 +1,634 @@
+/* ============================================================
+   JP Retro-Pop Design System — theme.css
+   日本の診断・エンタメ系サイト向け「レトロポップ」テーマ。
+   クリーム地 × 濃紺インキ罫線 × コーラル赤 × 黄マーカー × 丸ゴシック × ベタ落ち影。
+   フレームワーク非依存・このファイル単体で動く。
+   原則: グラデ/ぼかし影/ダーク地は使わない。すべてフラットなベタ塗り。
+   ============================================================ */
+
+/* 丸ゴシックは <head> で読み込むこと（SKILL.md 参照）:
+   M PLUS Rounded 1c weights 500/700/800 */
+
+:root {
+  --pop-bg: #fff8ec;        /* ページ地（クリーム） */
+  --pop-surface: #ffffff;   /* カード・ボタン地 */
+  --pop-ink: #2c3255;       /* 本文・罫線・落ち影（黒の代わり） */
+  --pop-accent: #f4604c;    /* 差し色（コーラル赤） */
+  --pop-accent-dark: #d94a37;
+  --pop-marker: #ffd94a;    /* 黄マーカー */
+  --pop-dim: #6a6f8e;
+  --pop-muted: #9aa0b8;
+  --pop-ok: #2f9e6e;
+  --pop-danger: #d64545;
+
+  --pop-radius: 14px;
+  --pop-shadow: 4px 4px 0 rgba(44, 50, 85, 0.16);      /* ベタ落ち影（ぼかさない） */
+  --pop-shadow-sm: 2px 2px 0 rgba(44, 50, 85, 0.18);
+  --pop-shadow-hard: 4px 4px 0 var(--pop-ink);          /* CTA用のフル落ち影 */
+  --pop-focus: 0 0 0 3px rgba(244, 96, 76, 0.3);
+  --pop-font: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic UI",
+    "Noto Sans JP", Meiryo, system-ui, sans-serif;
+}
+
+/* ---- ベース ---- */
+.pop-root, body.pop-root {
+  background-color: var(--pop-bg);
+  color: var(--pop-ink);
+  font-family: var(--pop-font);
+  line-height: 1.8;
+}
+/* 薄い水玉テクスチャ（bodyまたはセクションに付与） */
+.pop-dots {
+  background-color: var(--pop-bg);
+  background-image: radial-gradient(rgba(44, 50, 85, 0.05) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* ---- パネル（カード） ---- */
+.pop-panel {
+  background: var(--pop-surface);
+  border: 2px solid var(--pop-ink);
+  border-radius: var(--pop-radius);
+  box-shadow: var(--pop-shadow);
+  padding: 24px;
+}
+
+/* ---- テキスト ---- */
+.pop-marker {
+  background: linear-gradient(transparent 62%, var(--pop-marker) 62%);
+  padding: 0 2px;
+}
+.pop-title {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+.pop-dim { color: var(--pop-dim); }
+.pop-muted { color: var(--pop-muted); }
+.pop-num { font-variant-numeric: tabular-nums; }
+
+/* ---- ラベルピル（インキ色ベタ）: 見出し肩・カテゴリ・カウンタ ---- */
+.pop-tag {
+  display: inline-block;
+  background: var(--pop-ink);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  border-radius: 999px;
+  padding: 2px 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- スタンプ風バッジ（黄色地）: 称号・実績 ---- */
+.pop-badge {
+  display: inline-block;
+  border: 2px solid var(--pop-ink);
+  background: var(--pop-marker);
+  color: var(--pop-ink);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 3px 14px;
+  box-shadow: var(--pop-shadow-sm);
+}
+
+/* ---- ボタン ---- */
+.pop-btn {
+  display: inline-block;
+  border: 2px solid var(--pop-ink);
+  background: var(--pop-surface);
+  color: var(--pop-ink);
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 rgba(44, 50, 85, 0.18);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+.pop-btn:hover { background: #fff3d6; }
+.pop-btn:active { transform: translate(3px, 3px); box-shadow: none; } /* 押すと沈む */
+.pop-btn:focus-visible { outline: none; box-shadow: var(--pop-focus); }
+.pop-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* 主ボタン（CTA）: accentベタ＋インキのフル落ち影 */
+.pop-btn--cta {
+  background: var(--pop-accent);
+  color: #fff;
+  box-shadow: var(--pop-shadow-hard);
+  letter-spacing: 0.08em;
+  padding: 13px 28px;
+  font-size: 1.02rem;
+}
+.pop-btn--cta:hover { background: var(--pop-accent-dark); }
+.pop-btn--cta:active { transform: translate(4px, 4px); box-shadow: none; }
+
+/* ---- 選択肢チップ（クイズ回答・タグ選択） ---- */
+.pop-chip {
+  display: inline-block;
+  border: 2px solid var(--pop-ink);
+  background: var(--pop-surface);
+  color: var(--pop-ink);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--pop-shadow-sm);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+.pop-chip:hover { background: #fff3d6; }
+.pop-chip:active { transform: translate(2px, 2px); box-shadow: none; }
+.pop-chip.is-selected {
+  background: var(--pop-accent);
+  color: #fff;
+}
+
+/* 行型の選択肢（スマホ縦積みリスト用）。右端にバッジを置ける */
+.pop-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: 2px solid var(--pop-ink);
+  background: var(--pop-surface);
+  color: var(--pop-ink);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  line-height: 1.5;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 rgba(44, 50, 85, 0.16);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+.pop-choice:hover { background: #fff3d6; }
+.pop-choice:active,
+.pop-choice.is-selected { transform: translate(3px, 3px); box-shadow: none; }
+.pop-choice.is-selected { background: var(--pop-accent); color: #fff; }
+.pop-choice.is-dimmed { opacity: 0.35; pointer-events: none; }
+
+/* ---- 入力欄 ---- */
+.pop-input {
+  background: var(--pop-bg);
+  color: var(--pop-ink);
+  border: 2px solid var(--pop-ink);
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+}
+.pop-input:focus { outline: none; box-shadow: var(--pop-focus); }
+.pop-input::placeholder { color: var(--pop-muted); font-weight: 500; }
+
+/* ---- ゲージ・進捗 ---- */
+.pop-progress {
+  height: 12px;
+  background: var(--pop-surface);
+  border: 2px solid var(--pop-ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pop-progress > .fill {
+  height: 100%;
+  background: var(--pop-accent);
+  transition: width 0.3s ease;
+}
+.pop-progress--marker > .fill { background: var(--pop-marker); }
+
+.pop-gauge {
+  position: relative;
+  height: 14px;
+  background: var(--pop-surface);
+  border: 2px solid var(--pop-ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pop-gauge > .fill {
+  position: absolute;
+  top: 0; bottom: 0;
+  background: var(--pop-accent);
+  transition: width 0.3s ease;
+}
+.pop-gauge > .center { /* 中央線（左右対抗ゲージ用） */
+  position: absolute;
+  top: -2px; bottom: -2px;
+  left: 50%;
+  width: 2px;
+  background: var(--pop-ink);
+  opacity: 0.35;
+}
+
+/* ---- 文字タイル（頭文字表示・スロット演出） ---- */
+.pop-tile {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 40px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--pop-ink);
+  background: var(--pop-marker);
+  border: 2px solid var(--pop-ink);
+  border-radius: 8px;
+  box-shadow: var(--pop-shadow-sm);
+}
+.pop-tile.is-undecided { background: var(--pop-bg); color: var(--pop-muted); }
+
+/* ---- 動き（短く・きびきび。ふわふわさせない） ---- */
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.pop-in { animation: pop-in 0.3s ease both; }
+
+@keyframes pop-stamp { /* バッジやタイル確定時 */
+  0% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.pop-stamp { animation: pop-stamp 0.3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-in, .pop-stamp { animation: none !important; }
+  .pop-btn, .pop-chip, .pop-choice { transition: none; }
+}
+
+/* ---- App semantic tokens (defaults = original hardcodes; retro-pop unchanged) ---- */
+:root {
+  --pop-on-accent: #ffffff;
+  --pop-hover-fill: #fff3d6;
+  --pop-danger-soft: #ffe3df;
+  --pop-selected: #ffe8e3;
+  --pop-range: #fff0c8;
+  --pop-selected-range: #ffd9d2;
+  --pop-row-hover: rgba(244, 96, 76, 0.08);
+  --pop-ink-soft: rgba(44, 50, 85, 0.08);
+  --pop-ink-mid: rgba(44, 50, 85, 0.16);
+  --pop-shadow-ink-18: rgba(44, 50, 85, 0.18);
+  --pop-shadow-ink-14: rgba(44, 50, 85, 0.14);
+  --pop-ink-dash: rgba(44, 50, 85, 0.25);
+  --pop-tools-bg: rgba(255, 255, 255, 0.55);
+  --pop-app-rail: rgba(255, 255, 255, 0.35);
+  --pop-backdrop: rgba(44, 50, 85, 0.28);
+  --pop-input-fill: #ffffff;
+  --pop-kbd-bg: #ffffff;
+  --pop-due-soft: #ffe0da;
+  --pop-status-open-bg: #ffffff;
+  --pop-context-pill: #3d5a80;
+  --pop-radius-sm: 8px;
+  --pop-radius-btn: 999px;
+  --pop-border-w: 2px;
+  --pop-font-display: var(--pop-font);
+  --pop-weight-strong: 800;
+}
+
+/* Other themes: token overrides only. retro-pop / unset = :root as shipped. */
+
+[data-theme="easygoing"] {
+  --pop-shadow-ink-18: rgba(43, 45, 51, 0.14);
+  --pop-shadow-ink-14: rgba(43, 45, 51, 0.1);
+  --pop-bg: #f6f4ef;
+  --pop-surface: #ffffff;
+  --pop-ink: #2b2d33;
+  --pop-accent: #5271ff;
+  --pop-accent-dark: #3f5bdd;
+  --pop-marker: #ffe39a;
+  --pop-dim: #686b73;
+  --pop-muted: #9a9da5;
+  --pop-ok: #4f8f72;
+  --pop-danger: #cf6258;
+  --pop-on-accent: #ffffff;
+  --pop-hover-fill: #eef1ff;
+  --pop-danger-soft: #fae8e5;
+  --pop-selected: #e6ebff;
+  --pop-range: #f2eee5;
+  --pop-selected-range: #dbe3ff;
+  --pop-row-hover: rgba(82, 113, 255, 0.08);
+  --pop-ink-soft: rgba(43, 45, 51, 0.05);
+  --pop-ink-mid: rgba(43, 45, 51, 0.1);
+  --pop-ink-dash: rgba(43, 45, 51, 0.18);
+  --pop-tools-bg: rgba(255, 255, 255, 0.72);
+  --pop-app-rail: rgba(255, 255, 255, 0.48);
+  --pop-backdrop: rgba(43, 45, 51, 0.24);
+  --pop-input-fill: #ffffff;
+  --pop-kbd-bg: #fffdf8;
+  --pop-due-soft: #fff0c7;
+  --pop-status-open-bg: #ffffff;
+  --pop-context-pill: #5d6b91;
+  --pop-radius: 12px;
+  --pop-radius-sm: 10px;
+  --pop-radius-btn: 999px;
+  --pop-border-w: 1px;
+  --pop-shadow: 0 5px 18px rgba(43, 45, 51, 0.07);
+  --pop-shadow-sm: 0 2px 7px rgba(43, 45, 51, 0.07);
+  --pop-shadow-hard: 0 5px 16px rgba(82, 113, 255, 0.18);
+  --pop-focus: 0 0 0 3px rgba(82, 113, 255, 0.22);
+  --pop-font: "Source Sans 3", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI",
+    Meiryo, system-ui, sans-serif;
+  --pop-font-display: "Nunito", "Noto Sans JP", "Hiragino Sans", system-ui,
+    sans-serif;
+  --pop-weight-strong: 700;
+  --pop-weight-body: 400;
+  --pop-divider: rgba(43, 45, 51, 0.12);
+  --pop-panel-bg: #ffffff;
+}
+
+[data-theme="formal"] {
+  --pop-shadow-ink-18: rgba(26, 35, 50, 0.18);
+  --pop-shadow-ink-14: rgba(26, 35, 50, 0.14);
+  --pop-bg: #f4f2ee;
+  --pop-surface: #ffffff;
+  --pop-ink: #1a2332;
+  --pop-accent: #2a4a6e;
+  --pop-accent-dark: #1e3854;
+  --pop-marker: #dfe4ea;
+  --pop-dim: #5a6574;
+  --pop-muted: #8a93a0;
+  --pop-ok: #3d5570;
+  --pop-danger: #b33b3b;
+  --pop-on-accent: #ffffff;
+  --pop-hover-fill: #eef1f5;
+  --pop-danger-soft: #f5e4e2;
+  --pop-selected: #e6eef6;
+  --pop-range: #ece8df;
+  --pop-selected-range: #d9e4f0;
+  --pop-row-hover: rgba(42, 74, 110, 0.07);
+  --pop-ink-soft: rgba(26, 35, 50, 0.06);
+  --pop-ink-mid: rgba(26, 35, 50, 0.12);
+  --pop-ink-dash: rgba(26, 35, 50, 0.22);
+  --pop-tools-bg: rgba(255, 255, 255, 0.72);
+  --pop-app-rail: rgba(255, 255, 255, 0.55);
+  --pop-backdrop: rgba(26, 35, 50, 0.32);
+  --pop-input-fill: #ffffff;
+  --pop-kbd-bg: #ffffff;
+  --pop-due-soft: #e4ebf3;
+  --pop-status-open-bg: #ffffff;
+  --pop-context-pill: #3d5570;
+  --pop-radius: 3px;
+  --pop-radius-sm: 2px;
+  --pop-radius-btn: 3px;
+  --pop-border-w: 0;
+  --pop-shadow: none;
+  --pop-shadow-sm: none;
+  --pop-shadow-hard: none;
+  --pop-focus: 0 0 0 2px rgba(42, 74, 110, 0.28);
+  --pop-font: "Source Sans 3", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI",
+    Meiryo, system-ui, sans-serif;
+  --pop-font-display: "Source Sans 3", "Noto Sans JP", "Hiragino Sans",
+    "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+  --pop-weight-strong: 600;
+  --pop-weight-body: 400;
+  --pop-divider: #d8d4ce;
+  --pop-panel-bg: #ffffff;
+}
+
+[data-theme="geek"] {
+  /* VS Code Dark+ monochrome — no accent color, no radius */
+  --pop-shadow-ink-18: transparent;
+  --pop-shadow-ink-14: transparent;
+  --pop-bg: #1e1e1e;
+  --pop-surface: #1e1e1e;
+  --pop-ink: #cccccc;
+  --pop-accent: #3c3c3c;
+  --pop-accent-dark: #2d2d2d;
+  --pop-marker: #2d2d2d;
+  --pop-dim: #9d9d9d;
+  --pop-muted: #6a6a6a;
+  --pop-ok: #cccccc;
+  --pop-danger: #cccccc;
+  --pop-on-accent: #ffffff;
+  --pop-hover-fill: #2a2d2e;
+  --pop-danger-soft: #2a2d2e;
+  --pop-selected: #37373d;
+  --pop-range: #2d2d2d;
+  --pop-selected-range: #37373d;
+  --pop-row-hover: rgba(255, 255, 255, 0.04);
+  --pop-ink-soft: rgba(255, 255, 255, 0.04);
+  --pop-ink-mid: rgba(255, 255, 255, 0.08);
+  --pop-ink-dash: rgba(255, 255, 255, 0.12);
+  --pop-tools-bg: #252526;
+  --pop-app-rail: #1e1e1e;
+  --pop-backdrop: rgba(0, 0, 0, 0.55);
+  --pop-input-fill: #252526;
+  --pop-kbd-bg: #252526;
+  --pop-due-soft: #2d2d2d;
+  --pop-status-open-bg: #252526;
+  --pop-context-pill: #6a6a6a;
+  --pop-radius: 0;
+  --pop-radius-sm: 0;
+  --pop-radius-btn: 0;
+  --pop-border-w: 0;
+  --pop-shadow: none;
+  --pop-shadow-sm: none;
+  --pop-shadow-hard: none;
+  --pop-focus: 0 0 0 1px #6a6a6a;
+  --pop-font: "Segoe UI", "Yu Gothic UI", "Meiryo UI", Meiryo, "Hiragino Sans",
+    "Noto Sans JP", system-ui, sans-serif;
+  --pop-font-display: "Segoe UI", "Yu Gothic UI", "Meiryo UI", Meiryo,
+    "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --pop-font-mono: Consolas, "Cascadia Mono", "Courier New", "Noto Sans Mono",
+    monospace;
+  --pop-weight-strong: 500;
+  --pop-weight-body: 400;
+  --pop-divider: #2b2b2b;
+  --pop-panel-bg: #252526;
+}
+
+[data-theme="calm"] {
+  --pop-shadow-ink-18: rgba(47, 61, 58, 0.18);
+  --pop-shadow-ink-14: rgba(47, 61, 58, 0.14);
+  --pop-bg: #eef3f1;
+  --pop-surface: #ffffff;
+  --pop-ink: #2f3d3a;
+  --pop-accent: #5a9e8b;
+  --pop-accent-dark: #478574;
+  --pop-marker: #d5ebe3;
+  --pop-dim: #667874;
+  --pop-muted: #94a39f;
+  --pop-ok: #3f8f72;
+  --pop-danger: #c46b6b;
+  --pop-on-accent: #ffffff;
+  --pop-hover-fill: #e5efeb;
+  --pop-danger-soft: #f3e4e4;
+  --pop-selected: #dff0ea;
+  --pop-range: #e8eee6;
+  --pop-selected-range: #cfe8df;
+  --pop-row-hover: rgba(90, 158, 139, 0.1);
+  --pop-ink-soft: rgba(47, 61, 58, 0.06);
+  --pop-ink-mid: rgba(47, 61, 58, 0.1);
+  --pop-ink-dash: rgba(47, 61, 58, 0.18);
+  --pop-tools-bg: rgba(255, 255, 255, 0.7);
+  --pop-app-rail: rgba(255, 255, 255, 0.5);
+  --pop-backdrop: rgba(47, 61, 58, 0.25);
+  --pop-input-fill: #ffffff;
+  --pop-kbd-bg: #ffffff;
+  --pop-due-soft: #dceee7;
+  --pop-status-open-bg: #ffffff;
+  --pop-context-pill: #5f7d88;
+  --pop-radius: 16px;
+  --pop-radius-sm: 10px;
+  --pop-radius-btn: 999px;
+  --pop-border-w: 1px;
+  --pop-shadow: 0 4px 14px rgba(47, 61, 58, 0.08);
+  --pop-shadow-sm: 0 2px 6px rgba(47, 61, 58, 0.07);
+  --pop-shadow-hard: 0 4px 12px rgba(90, 158, 139, 0.28);
+  --pop-focus: 0 0 0 3px rgba(90, 158, 139, 0.28);
+  --pop-font: "Nunito", "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+  --pop-font-display: "Nunito", "Noto Sans JP", system-ui, sans-serif;
+  --pop-weight-strong: 700;
+}
+
+body[data-theme="easygoing"].pop-dots,
+body[data-theme="formal"].pop-dots,
+body[data-theme="calm"].pop-dots {
+  background-image: none;
+}
+
+body[data-theme="geek"].pop-dots {
+  background-image: none;
+}
+
+[data-theme="easygoing"] .brand-mark,
+[data-theme="easygoing"] .pop-title,
+[data-theme="formal"] .brand-mark,
+[data-theme="formal"] .pop-title,
+[data-theme="geek"] .brand-mark,
+[data-theme="geek"] .pop-title,
+[data-theme="calm"] .brand-mark,
+[data-theme="calm"] .pop-title {
+  font-family: var(--pop-font-display);
+}
+
+[data-theme="geek"] .help-section kbd,
+[data-theme="geek"] .status-pill,
+[data-theme="geek"] .progress-label,
+[data-theme="geek"] .title-input,
+[data-theme="geek"] .title-mirror,
+[data-theme="geek"] .detail-title,
+[data-theme="geek"] .detail-note,
+[data-theme="geek"] .detail-empty {
+  font-family: var(--pop-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Code theme: strip chrome — flat, square, divider-only */
+[data-theme="geek"] *,
+[data-theme="geek"] *::before,
+[data-theme="geek"] *::after {
+  border-radius: 0 !important;
+}
+
+[data-theme="formal"] .pop-panel,
+[data-theme="formal"] .pop-btn,
+[data-theme="formal"] .pop-chip,
+[data-theme="formal"] .pop-choice,
+[data-theme="formal"] .pop-input,
+[data-theme="formal"] .pop-badge,
+[data-theme="formal"] .pop-tag,
+[data-theme="geek"] .pop-panel,
+[data-theme="geek"] .pop-btn,
+[data-theme="geek"] .pop-chip,
+[data-theme="geek"] .pop-choice,
+[data-theme="geek"] .pop-input,
+[data-theme="geek"] .pop-badge,
+[data-theme="geek"] .pop-tag {
+  box-shadow: none;
+  border-color: transparent;
+  border-width: 0;
+}
+
+[data-theme="formal"] .pop-input {
+  border-width: 1px;
+  border-color: var(--pop-divider);
+  background: var(--pop-input-fill);
+}
+
+[data-theme="formal"] .pop-input:hover {
+  border-color: var(--pop-ink-dash);
+}
+
+[data-theme="formal"] .pop-input:focus {
+  border-color: var(--pop-accent);
+}
+
+[data-theme="geek"] .pop-input {
+  border-width: 1px 0;
+  border-color: #3c3c3c;
+}
+
+[data-theme="geek"] .pop-input:focus {
+  border-color: #6a6a6a;
+}
+
+[data-theme="geek"] .pop-btn--cta,
+[data-theme="geek"] .pop-tag,
+[data-theme="geek"] .pop-chip.is-selected,
+[data-theme="geek"] .pop-choice.is-selected {
+  background: var(--pop-selected);
+  color: var(--pop-ink);
+}
+
+
+/* Non-default themes: remap hardcodes inside original component rules */
+[data-theme="easygoing"] .pop-tag,
+[data-theme="formal"] .pop-tag,
+[data-theme="calm"] .pop-tag,
+[data-theme="easygoing"] .pop-btn--cta,
+[data-theme="formal"] .pop-btn--cta,
+[data-theme="calm"] .pop-btn--cta,
+[data-theme="easygoing"] .pop-chip.is-selected,
+[data-theme="formal"] .pop-chip.is-selected,
+[data-theme="calm"] .pop-chip.is-selected,
+[data-theme="easygoing"] .pop-choice.is-selected,
+[data-theme="formal"] .pop-choice.is-selected,
+[data-theme="calm"] .pop-choice.is-selected {
+  color: var(--pop-on-accent);
+}
+
+[data-theme="easygoing"] .pop-btn:hover,
+[data-theme="formal"] .pop-btn:hover,
+[data-theme="geek"] .pop-btn:hover,
+[data-theme="calm"] .pop-btn:hover,
+[data-theme="easygoing"] .pop-chip:hover,
+[data-theme="formal"] .pop-chip:hover,
+[data-theme="geek"] .pop-chip:hover,
+[data-theme="calm"] .pop-chip:hover,
+[data-theme="easygoing"] .pop-choice:hover,
+[data-theme="formal"] .pop-choice:hover,
+[data-theme="geek"] .pop-choice:hover,
+[data-theme="calm"] .pop-choice:hover {
+  background: var(--pop-hover-fill);
+}
+
+[data-theme="easygoing"] .pop-panel,
+[data-theme="easygoing"] .pop-btn,
+[data-theme="easygoing"] .pop-chip,
+[data-theme="easygoing"] .pop-choice,
+[data-theme="easygoing"] .pop-input,
+[data-theme="easygoing"] .pop-badge,
+[data-theme="easygoing"] .pop-progress,
+[data-theme="easygoing"] .pop-gauge {
+  border-width: var(--pop-border-w);
+}
+
+[data-theme="easygoing"] .pop-btn,
+[data-theme="easygoing"] .pop-chip,
+[data-theme="easygoing"] .pop-choice {
+  box-shadow: var(--pop-shadow-sm);
+}
+
+[data-theme="easygoing"] .pop-btn:active,
+[data-theme="easygoing"] .pop-chip:active,
+[data-theme="easygoing"] .pop-choice:active,
+[data-theme="easygoing"] .pop-choice.is-selected {
+  transform: translateY(1px);
+}

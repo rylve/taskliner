@@ -1,0 +1,239 @@
+/* Shared styles for public Taskliner pages and their links in the app chrome. */
+
+.site-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--pop-bg);
+  color: var(--pop-ink);
+  font-family: var(--pop-font);
+  line-height: 1.75;
+}
+
+.site-shell {
+  width: min(100%, 960px);
+  margin: 0 auto;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 4px 0 18px;
+  border-bottom: 2px solid var(--pop-ink);
+}
+
+.site-brand,
+.site-brand:visited {
+  color: var(--pop-ink);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 16px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.site-nav a,
+.site-nav a:visited,
+.site-footer a,
+.site-footer a:visited {
+  color: var(--pop-ink);
+}
+
+.site-main {
+  padding: 56px 0 72px;
+}
+
+.site-hero {
+  max-width: 720px;
+  margin-bottom: 34px;
+}
+
+.site-kicker {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: var(--pop-ink);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.site-title {
+  margin: 0;
+  font-size: clamp(2.1rem, 6vw, 4.4rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.site-lead {
+  margin: 18px 0 0;
+  color: var(--pop-dim);
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+}
+
+.site-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.site-button,
+.site-button:visited {
+  display: inline-block;
+  padding: 9px 18px;
+  border: 2px solid var(--pop-ink);
+  border-radius: 999px;
+  background: var(--pop-accent);
+  color: #fff;
+  box-shadow: 3px 3px 0 var(--pop-ink);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.site-button.secondary,
+.site-button.secondary:visited {
+  background: var(--pop-surface);
+  color: var(--pop-ink);
+}
+
+.site-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.site-card {
+  padding: 22px;
+  border: 2px solid var(--pop-ink);
+  border-radius: var(--pop-radius);
+  background: var(--pop-surface);
+  box-shadow: var(--pop-shadow);
+}
+
+.site-card h2,
+.site-card h3 {
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.site-card p:last-child,
+.site-card ul:last-child {
+  margin-bottom: 0;
+}
+
+.site-content {
+  max-width: 760px;
+}
+
+.site-content h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.15;
+}
+
+.site-content h2 {
+  margin: 42px 0 12px;
+  padding-top: 18px;
+  border-top: 2px solid color-mix(in srgb, var(--pop-ink) 22%, transparent);
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.site-content h3 {
+  margin: 26px 0 8px;
+  font-size: 1.05rem;
+}
+
+.site-content p,
+.site-content ul,
+.site-content ol {
+  margin: 12px 0;
+}
+
+.site-content li + li {
+  margin-top: 7px;
+}
+
+.site-content a {
+  color: var(--pop-accent-dark);
+  font-weight: 700;
+}
+
+.site-meta {
+  margin: 10px 0 30px;
+  color: var(--pop-dim);
+  font-size: 0.9rem;
+}
+
+.site-callout {
+  margin: 22px 0;
+  padding: 16px 18px;
+  border-left: 6px solid var(--pop-accent);
+  background: color-mix(in srgb, var(--pop-marker) 35%, var(--pop-surface));
+}
+
+.site-callout strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-top: 18px;
+  border-top: 2px solid var(--pop-ink);
+  color: var(--pop-dim);
+  font-size: 0.82rem;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.brand-mark,
+.brand-mark:visited {
+  color: var(--pop-ink);
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .site-page {
+    padding: 16px;
+  }
+
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .site-nav {
+    justify-content: flex-start;
+  }
+
+  .site-main {
+    padding: 40px 0 52px;
+  }
+
+  .site-grid {
+    grid-template-columns: 1fr;
+  }
+}

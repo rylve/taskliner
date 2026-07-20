@@ -1,0 +1,175 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  test-and-deploy:
+    # Manual deploy only until Cloudflare secrets are configured on the public account.
+    # Never runs on pull requests; skips forks.
+    if: github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    name: Test and deploy
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Run tests
+        run: node --test tests/*.test.mjs
+
+      - name: Syntax-check app.js
+        run: node --check app.js
+
+      - name: Prepare public assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist
+          mkdir -p dist/src/model dist/src/storage dist/src/crypto dist/src/google dist/src/sync dist/src/integrations dist/src/pairing dist/privacy dist/terms dist/contact dist/data-and-sync dist/tutorial dist/vendor/flatpickr/l10n
+          cp index.html app.js guided.js bootstrap.js i18n.js styles.css theme.css site.css sw.js _headers favicon.svg logo-mark.svg og-image.svg 404.html dist/
+          cp privacy/index.html dist/privacy/
+          cp terms/index.html dist/terms/
+          cp contact/index.html dist/contact/
+          cp data-and-sync/index.html dist/data-and-sync/
+          cp index.html dist/tutorial/index.html
+          cp vendor/flatpickr/flatpickr.min.css vendor/flatpickr/flatpickr.min.js dist/vendor/flatpickr/
+          cp vendor/flatpickr/l10n/ja.js dist/vendor/flatpickr/l10n/
+          cp src/model/*.mjs dist/src/model/
+          cp src/storage/*.mjs dist/src/storage/
+          cp src/crypto/*.mjs dist/src/crypto/
+          cp src/google/*.mjs dist/src/google/
+          cp src/sync/*.mjs dist/src/sync/
+          cp src/integrations/*.mjs dist/src/integrations/
+          cp src/pairing/*.mjs dist/src/pairing/
+
+      - name: Deploy realtime Worker
+        id: deploy_realtime
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: realtime-worker
+          command: deploy
+          packageManager: npm
+
+      - name: Report realtime deployment status
+        if: steps.deploy_realtime.outcome != 'success'
+        run: echo "::warning::Realtime Worker deployment did not succeed; continuing with Pages deploy if configured."
+
+      - name: Verify production E2EE configuration
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token = process.env.CLOUDFLARE_API_TOKEN;
+          const api = 'https://api.cloudflare.com/client/v4';
+
+          async function request(path, init = {}) {
+            const response = await fetch(`${api}${path}`, {
+              ...init,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                ...(init.headers || {}),
+              },
+            });
+            const body = await response.json();
+            if (!response.ok || body.success !== true) {
+              throw new Error(`Cloudflare API ${response.status}: verification failed`);
+            }
+            return body.result;
+          }
+
+          const project = await request(`/accounts/${accountId}/pages/projects/taskliner`);
+          const flag = project.deployment_configs?.production?.env_vars?.TASKLINER_SYNC_V3?.value;
+          if (flag !== 'enabled') throw new Error('TASKLINER_SYNC_V3 production flag verification failed');
+          console.log('Verified production sync v3 flag without modifying variables or secrets');
+          NODE
+
+      - name: Bind realtime Worker to Pages production
+        if: steps.deploy_realtime.outcome == 'success'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token = process.env.CLOUDFLARE_API_TOKEN;
+          const api = 'https://api.cloudflare.com/client/v4';
+
+          async function request(path, init = {}) {
+            const response = await fetch(`${api}${path}`, {
+              ...init,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                ...(init.headers || {}),
+              },
+            });
+            const body = await response.json();
+            if (!response.ok || body.success !== true) {
+              throw new Error(`Cloudflare API ${response.status}: binding update failed`);
+            }
+            return body.result;
+          }
+
+          const namespaces = await request(`/accounts/${accountId}/workers/durable_objects/namespaces?per_page=100`);
+          const namespace = namespaces.find((entry) => (
+            entry.script === 'taskliner-realtime' && entry.class === 'TasklinerSyncRoom'
+          ));
+          if (!namespace?.id) throw new Error('TasklinerSyncRoom Durable Object namespace was not found');
+
+          const projectPath = `/accounts/${accountId}/pages/projects/taskliner`;
+          const project = await request(projectPath);
+          const current = project.deployment_configs?.production?.durable_object_namespaces || {};
+          await request(projectPath, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              deployment_configs: {
+                production: {
+                  durable_object_namespaces: {
+                    ...current,
+                    SYNC_ROOM: { namespace_id: namespace.id },
+                  },
+                },
+              },
+            }),
+          });
+
+          const verified = await request(projectPath);
+          const binding = verified.deployment_configs?.production?.durable_object_namespaces?.SYNC_ROOM;
+          if (binding?.namespace_id !== namespace.id) {
+            throw new Error('SYNC_ROOM production binding verification failed');
+          }
+          console.log('Verified production SYNC_ROOM binding');
+          NODE
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=taskliner --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          packageManager: npm

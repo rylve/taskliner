@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 3,
+  "nodes": {
+    "root": {
+      "id": "root",
+      "title": "Plan release",
+      "parentId": null,
+      "childIds": ["child"],
+      "collapsed": false,
+      "createdAt": 1700000000000,
+      "completedAt": null,
+      "dueAt": null,
+      "note": "Keep the local copy safe."
+    },
+    "child": {
+      "id": "child",
+      "title": "Add tests",
+      "parentId": "root",
+      "childIds": [],
+      "collapsed": false,
+      "createdAt": 1700000001000,
+      "completedAt": null,
+      "dueAt": 1700086400000,
+      "note": ""
+    }
+  },
+  "rootIds": ["root"],
+  "selectedId": "child",
+  "ui": {
+    "tab": "active",
+    "theme": "retro-pop",
+    "activeQuery": "",
+    "activeSort": "outline",
+    "progressMode": "all",
+    "categoryMode": true,
+    "dueKeepTree": true,
+    "dueShowUndated": false,
+    "titleWrap": true,
+    "plainTextMode": false,
+    "zoomId": null,
+    "archiveQuery": "",
+    "archiveSort": "completed-desc",
+    "archivePeriod": "all",
+    "archiveFrom": "",
+    "archiveTo": ""
+  }
+}
