@@ -11,8 +11,14 @@ Local-first, private, open source, and ad-free.
 
 ## Screenshot
 
-<!-- Replace with a real screenshot before the first public release if desired. -->
-<p align="center"><em>Screenshot placeholder — open <a href="https://taskliner.app">taskliner.app</a> or run locally to try the UI.</em></p>
+<p align="center">
+  <img src="./docs/screenshots/desktop-outline.jpg" alt="Taskliner desktop outline view with task details" width="720">
+</p>
+
+<p align="center">
+  <img src="./docs/screenshots/desktop-zoom.jpg" alt="Taskliner desktop focused task view" width="720">
+  <img src="./docs/screenshots/mobile-outline.jpg" alt="Taskliner mobile outline view" width="240">
+</p>
 
 ## Features
 
@@ -64,6 +70,32 @@ Sync is optional. Local-only use stays account-free.
 **Not covered by sync encryption:** plaintext local IndexedDB on your device, compromised browsers/devices, screen capture, and losing every unlock method (devices + passkey + recovery file).
 
 This repository documents the model for transparency. It is **not** a formal security audit. See [docs/security-model.md](./docs/security-model.md).
+
+## Build Week: Codex and GPT-5.6
+
+Taskliner was substantially extended during OpenAI Build Week using Codex with GPT-5.6. The project was developed through a repeatable loop of specification, implementation, automated testing, real-browser verification, debugging, and release preparation.
+
+### Where Codex accelerated the workflow
+
+- Turned cross-cutting design work into small implementation and test iterations across the outline model, storage, sync, encryption, pairing, and mobile UI.
+- Reproduced browser-only issues in the live UI, including mobile sheet behavior, sync overwrite cases, tutorial isolation, and production security headers, then carried each fix back into code and tests.
+- Made failure cases explicit and testable: empty remote state, stale devices, account mismatch, retries, tombstones, OAuth failures, encryption boundaries, and pairing recovery.
+- Extended the same quality loop to release preparation, including deployment checks, public-surface review, manual QA, and demo materials.
+
+### Key product and engineering decisions
+
+| Area | Decision | Reason |
+| --- | --- | --- |
+| Data ownership | Local-first use remains account-free; optional sync stores encrypted artifacts in the user's Google Drive app data folder. | Keep the core experience usable without an account and keep task content outside the service's long-term database. |
+| Security boundary | Encryption, merge, and projection stay in the browser; the server handles transport and outer validation. | Avoid exposing task content to the service. |
+| Mobile UX | Mobile uses a branch-oriented view instead of a shrunken desktop layout. | Preserve context while navigating deep outlines on a small screen. |
+| Sync safety | Pull, retry, stale-device handling, tombstones, and conflict cases are conservative and test-driven. | Prevent silent data loss and make recovery paths explicit. |
+
+### How GPT-5.6 and Codex were used
+
+GPT-5.6 supported product framing, architecture comparisons, mobile information design, sync and recovery UX, and refinement of the user-facing explanation. Codex translated those decisions into repository-wide changes, tests, Git iterations, browser verification, deployment checks, and release evidence.
+
+The important distinction is that Codex was used as the implementation and verification partner, not only as a code generator: it connected research, design, coding, testing, real-UI debugging, and release preparation in one workflow. The detailed, evidence-based history is in [docs/codex-development-history.md](./docs/codex-development-history.md).
 
 ## Run locally (static UI)
 
