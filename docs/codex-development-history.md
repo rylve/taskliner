@@ -94,6 +94,4 @@ This is the central technical contribution of the AI-assisted workflow: Codex co
 
 ## Evidence available to judges
 
-The phase map, design documents, source directories, tests, and demo materials provide the technical evidence behind the workflow described here. The S01–S10 labels are explanatory work-group labels; they are not Codex Session IDs. The primary build thread is the thread containing most of the core implementation, and its separate `/feedback` identifier is handled through the hackathon submission process.
-
-See the [OpenAI Build Week FAQ](https://openai.devpost.com/details/faqs) for the submission requirements.
+The phase map, design documents, source directories, tests, and demo materials provide the technical evidence behind the workflow described here. The S01–S10 labels are explanatory work-group labels, not Codex Session IDs. The submission is represented by one identifier for the primary build thread containing most of the core implementation.

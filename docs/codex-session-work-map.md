@@ -29,6 +29,4 @@ The public repository is a clean release snapshot and does not contain the compl
 
 ## Evidence available to judges
 
-For each phase, judges can inspect the corresponding design documents, source directories, tests, and demo materials listed in [codex-development-history.md](https://github.com/rylve/taskliner/blob/main/docs/codex-development-history.md). The S01–S10 labels describe the work phases; the separate primary-thread identifier is handled through the hackathon submission process.
-
-See the [OpenAI Build Week FAQ](https://openai.devpost.com/details/faqs) for the existing-project, Codex, GPT-5.6, and Session ID requirements.
+For each phase, judges can inspect the corresponding design documents, source directories, tests, and demo materials listed in [codex-development-history.md](https://github.com/rylve/taskliner/blob/main/docs/codex-development-history.md). The S01–S10 labels describe the work phases. The submission uses one representative identifier for the primary build thread rather than a list of identifiers for every phase.
