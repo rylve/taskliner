@@ -13,7 +13,7 @@ Taskliner is a browser-based, keyboard-first outline task editor. Users can writ
 - The `tests/` directory contains coverage for the model, migrations, IndexedDB, synchronization, OAuth, encryption, pairing, Discord integration, and public-surface behavior.
 - The project existed before Build Week. The phase-by-phase work is documented in [codex-session-work-map.md](./codex-session-work-map.md), design documents, test history, and the Codex submission evidence. The clean public snapshot should not be interpreted as a complete historical Git timeline.
 
-This distinction is intentional: the repository is publishable and reproducible, while the development record remains explicit about which evidence comes from the reconstructed public snapshot and which comes from the dated Build Week work log.
+This distinction is intentional: the repository is publishable and reproducible, while the development record remains explicit about which evidence comes from the reconstructed public snapshot and which comes from the dated Build Week work log. Some development logs were not suitable for public release; the complete commit-preserving repository log is provided separately as a ZIP attachment with the Build Week submission.
 
 ## Major implementation areas
 

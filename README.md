@@ -15,11 +15,6 @@ Local-first, private, open source, and ad-free.
   <img src="./docs/screenshots/desktop-outline.jpg" alt="Taskliner desktop outline view with task details" width="720">
 </p>
 
-<p align="center">
-  <img src="./docs/screenshots/desktop-zoom.jpg" alt="Taskliner desktop focused task view" width="720">
-  <img src="./docs/screenshots/mobile-outline.jpg" alt="Taskliner mobile outline view" width="240">
-</p>
-
 ## Features
 
 - Infinite-depth outline editing that feels like Markdown bullets
@@ -75,7 +70,7 @@ This repository documents the model for transparency. It is **not** a formal sec
 
 Taskliner was substantially extended during OpenAI Build Week using Codex with GPT-5.6. The project was developed through a repeatable loop of specification, implementation, automated testing, real-browser verification, debugging, and release preparation.
 
-The public repository was prepared as a clean release snapshot on July 21, 2026. Its public Git history contains five release-preparation commits, so the full phase-by-phase development record is documented separately in [docs/codex-development-history.md](./docs/codex-development-history.md) and [docs/codex-session-work-map.md](./docs/codex-session-work-map.md).
+The public repository was prepared as a clean release snapshot on July 21, 2026 because some development logs were not suitable for public release. Its public Git history contains five release-preparation commits. The complete commit-preserving repository log is attached separately as a ZIP with the Build Week submission. The full phase-by-phase development record is also documented in [docs/codex-development-history.md](./docs/codex-development-history.md) and [docs/codex-session-work-map.md](./docs/codex-session-work-map.md).
 
 ### Where Codex accelerated the workflow
 
