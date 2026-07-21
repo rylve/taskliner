@@ -1,4 +1,4 @@
-import { validateTree } from "../model/validate-tree.mjs";
+import { createActiveTreeProjection, validateTree } from "../model/validate-tree.mjs";
 
 const DEVICE_STATE_FORMAT = "taskliner-device-state";
 const DEVICE_STATE_VERSION = 1;
@@ -92,14 +92,15 @@ export function createDeviceState({
   if (!isRecord(doc) || !isRecord(doc.nodes)) throw new Error("A valid local document is required");
   if (typeof workspaceId !== "string" || !workspaceId) throw new Error("workspaceId is required");
   if (typeof deviceId !== "string" || !deviceId) throw new Error("deviceId is required");
-  const tree = validateTree(doc);
+  const syncDoc = createActiveTreeProjection(doc);
+  const tree = validateTree(syncDoc);
   if (!tree.ok) throw new Error(`Cannot create device state from invalid tree: ${tree.errors.join("; ")}`);
 
   const stamp = makeStamp(lamportCounter, deviceId);
-  const order = siblingOrder(doc);
+  const order = siblingOrder(syncDoc);
   const nodes = {};
-  for (const id of Object.keys(doc.nodes).sort()) {
-    const node = doc.nodes[id];
+  for (const id of Object.keys(syncDoc.nodes).sort()) {
+    const node = syncDoc.nodes[id];
     const previousNode = isRecord(previousState?.nodes) && isRecord(previousState.nodes[id])
       ? previousState.nodes[id]
       : null;

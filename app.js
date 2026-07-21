@@ -1,5 +1,5 @@
 import { initI18n, t, getLocale, getLocaleTag, setLocale } from "./i18n.js";
-import { validateTree } from "./src/model/validate-tree.mjs";
+import { repairTreeLinks, validateTree } from "./src/model/validate-tree.mjs";
 import {
   activeChildrenOf as activeOutlineChildrenOf,
   ancestorChain as outlineAncestorChain,
@@ -56,8 +56,9 @@ import {
 import { capturePairingFragment, PAIRING_FRAGMENT_SESSION_KEY } from "./src/pairing/pairing-fragment.mjs";
 import { encodeQrSvg } from "./src/pairing/qr-code.mjs";
 import { base64urlDecode } from "./src/crypto/e2ee-utils.mjs";
-import { createSyncScheduler } from "./src/sync/scheduler.mjs";
+import { createSyncOperationQueue, createSyncScheduler } from "./src/sync/scheduler.mjs";
 import { createSyncContentSnapshot } from "./src/sync/content-snapshot.mjs";
+import { activeProjectionIsCurrent, createSyncApplyGuard } from "./src/sync/document-guard.mjs";
 import { createIntegrationSettingsStore, normalizeDiscordSettings } from "./src/storage/integration-settings.mjs";
 import { createCompletionOutbox } from "./src/integrations/completion-outbox.mjs";
 import { shouldDiscardDiscordOutbox } from "./src/integrations/discord-sync-policy.mjs";
@@ -95,6 +96,7 @@ let syncUiPhase = null;
 let realtimeEnabled = false;
 let realtimeReconnectTimer = null;
 let realtimeReconnectAttempt = 0;
+let realtimeNeedsCatchup = false;
 let foregroundSyncPromise = null;
 let foregroundSyncInProgress = false;
 const pairingRegistry = new PairingUseRegistry();
@@ -367,12 +369,16 @@ const driveSync = (syncV3Enabled ? createTasklinerE2eeSync : createTasklinerServ
   validateSharedSetting: validateEncryptedDiscordSetting,
 });
 
+const syncOperations = createSyncOperationQueue();
 const syncScheduler = createSyncScheduler({
   onPush: async () => {
     syncUiPhase = "sending";
     updateSyncUi();
     try {
-      await driveSync.push({ interactive: false });
+      const result = await syncOperations.run(() => driveSync.push({ interactive: false }));
+      const status = driveSync.getStatus();
+      if (!status.localDirty) return true;
+      return ["sync_paused", "sync_paused_after_delete", "remote_data_missing"].includes(result?.reason);
     } finally {
       syncUiPhase = null;
       updateSyncUi();
@@ -382,7 +388,7 @@ const syncScheduler = createSyncScheduler({
     syncUiPhase = "checking";
     updateSyncUi();
     try {
-      await driveSync.pull({ interactive: false });
+      await syncOperations.run(() => driveSync.pull({ interactive: false }));
     } finally {
       syncUiPhase = null;
       updateSyncUi();
@@ -393,6 +399,13 @@ const syncScheduler = createSyncScheduler({
     updateSyncUi(error);
   },
 });
+
+async function syncDriveNow(options) {
+  const result = await syncOperations.run(() => driveSync.syncNow(options));
+  if (driveSync.getStatus().localDirty) syncScheduler.noteLocalChange();
+  else syncScheduler.clearLocalChanges();
+  return result;
+}
 
 /** @type {Doc} */
 let doc;
@@ -1056,20 +1069,10 @@ function migrateDoc(parsed) {
       }
     }
   } else {
-    // The active split projection can contain stale tutorial links. Repair
-    // active parent links while retaining IDs whose payload lives in archive.
-    for (const n of Object.values(nodes)) {
-      if (n.parentId && !nodes[n.parentId]) n.parentId = null;
-    }
-    for (const n of Object.values(nodes)) {
-      const retained = Array.isArray(n.childIds)
-        ? n.childIds.filter((childId) => !nodes[childId] || nodes[childId].parentId === n.id)
-        : [];
-      for (const child of Object.values(nodes)) {
-        if (child.parentId === n.id && !retained.includes(child.id)) retained.push(child.id);
-      }
-      n.childIds = retained;
-    }
+    // Keep archive placeholders while repairing all active parent/child links.
+    const projection = { nodes, rootIds };
+    repairTreeLinks(projection, { preserveExternalIds: true });
+    rootIds = projection.rootIds;
   }
   rootIds = splitProjection
     ? [...new Set(rootIds.filter((id) => nodes[id] && nodes[id].parentId == null))]
@@ -1181,11 +1184,12 @@ function applyPersistedDoc(nextDoc) {
 
 async function applySyncedDocument(fullDoc, { expectedSnapshot = null } = {}) {
   if (!fullDoc || skipPersist) return false;
-  if (expectedSnapshot !== null && createSyncContentSnapshot(doc) !== expectedSnapshot) return false;
+  const guard = await createSyncApplyGuard({ storage, activeDoc: doc, expectedFullSnapshot: expectedSnapshot });
+  if (!guard.matchesExpectedFullDocument) return false;
   const split = splitDocument(fullDoc);
   hasLocalChangesSinceStartup = true;
   await storage.replaceDocument(fullDoc);
-  if (expectedSnapshot !== null && createSyncContentSnapshot(doc) !== expectedSnapshot) return false;
+  if (!activeProjectionIsCurrent(guard.activeSnapshot, doc)) return false;
   invalidateArchiveView();
   archiveState.total = split.archiveNodes.length;
   archiveState.matchedTotal = split.archiveNodes.length;
@@ -1326,6 +1330,7 @@ function redo() {
 function saveDoc({ recordHistory = false } = {}) {
   if (recordHistory) pushHistory();
   if (skipPersist) return;
+  repairTreeLinks(doc, { preserveExternalIds: true });
   hasLocalChangesSinceStartup = true;
   void storage.write(doc);
   queueSyncIfContentChanged();
@@ -4298,7 +4303,7 @@ async function applyEncryptedDiscordSetting(value) {
 
 function syncDiscordSettingToDrive(value) {
   if (!syncV3Enabled || typeof driveSync.pushSharedSetting !== "function") return;
-  void driveSync.pushSharedSetting(value).catch((error) => updateSyncUi(error));
+  void syncOperations.run(() => driveSync.pushSharedSetting(value)).catch((error) => updateSyncUi(error));
 }
 
 async function syncDiscordSettingsUi() {
@@ -5682,6 +5687,7 @@ function renderDetail() {
   el.detailPane?.classList.remove("is-empty");
   el.detailTitle.value = n.title;
   el.detailNote.value = n.note;
+  el.detailNote.disabled = isCompleted(n);
   if (el.detailDue) {
     const dueValue = dueAtToDateInput(n.dueAt);
     el.detailDue.value = dueValue;
@@ -6365,12 +6371,12 @@ async function setupEncryptedSync() {
   syncUiPhase = "checking";
   updateSyncUi();
   try {
-    if (typeof driveSync.refreshStatus === "function") await driveSync.refreshStatus();
+    if (typeof driveSync.refreshStatus === "function") await syncOperations.run(() => driveSync.refreshStatus());
     const currentStatus = driveSync.getStatus();
     if (currentStatus.e2eeStatus === "migrating" && driveSync.getWorkspaceKey()) {
-      await driveSync.migrateLegacy();
+      await syncOperations.run(() => driveSync.migrateLegacy());
       const discordSettings = await integrationSettings.readDiscord({ fresh: true });
-      await driveSync.pushSharedSetting(discordSettings.webhookUrl ? discordSettings : null);
+      await syncOperations.run(() => driveSync.pushSharedSetting(discordSettings.webhookUrl ? discordSettings : null));
       syncScheduler.start();
       startRealtimeChannel();
       showNoticeToast(t("e2ee.setupComplete"));
@@ -6412,28 +6418,28 @@ async function setupEncryptedSync() {
     try {
       const setupStatus = driveSync.getStatus();
       if (["legacy", "migrating"].includes(setupStatus.e2eeStatus) && setupStatus.legacyCount > 0) {
-        await driveSync.migrateLegacy({ wrappers });
+        await syncOperations.run(() => driveSync.migrateLegacy({ wrappers }));
       } else {
         const discordSettings = await integrationSettings.readDiscord({ fresh: true });
-        await driveSync.activateNewWorkspace({ wrappers, sharedSetting: discordSettings.webhookUrl ? discordSettings : null });
+        await syncOperations.run(() => driveSync.activateNewWorkspace({ wrappers, sharedSetting: discordSettings.webhookUrl ? discordSettings : null }));
       }
     } catch (error) {
       if (error?.code === "legacy_exists") {
-        await driveSync.migrateLegacy({ wrappers });
+        await syncOperations.run(() => driveSync.migrateLegacy({ wrappers }));
       } else if (error?.code === "migration_locked") {
         await driveSync.discardWorkspaceKey();
-        if (typeof driveSync.refreshStatus === "function") await driveSync.refreshStatus().catch(() => undefined);
+        if (typeof driveSync.refreshStatus === "function") await syncOperations.run(() => driveSync.refreshStatus()).catch(() => undefined);
         throw new E2eeMigrationLockedError(t("e2ee.migrationLocked"));
       } else if (error?.code === "workspace_initialized") {
         await driveSync.discardWorkspaceKey();
-        try { await driveSync.syncNow({ interactive: false }); } catch { /* refresh remote workspace identity */ }
+        try { await syncDriveNow({ interactive: false }); } catch { /* refresh remote workspace identity */ }
         throw new E2eeSyncLockedError();
       } else {
         throw error;
       }
     }
     const discordSettings = await integrationSettings.readDiscord({ fresh: true });
-    await driveSync.pushSharedSetting(discordSettings.webhookUrl ? discordSettings : null);
+    await syncOperations.run(() => driveSync.pushSharedSetting(discordSettings.webhookUrl ? discordSettings : null));
     syncScheduler.start();
     startRealtimeChannel();
     showNoticeToast(t("e2ee.setupComplete"));
@@ -6454,7 +6460,7 @@ async function unlockEncryptedSyncWithPasskey() {
     const prfResult = await getTasklinerPasskeyPrf(wrapper);
     await driveSync.unlockWithPasskey(wrapper, prfResult);
     setDeviceLinkPhase("syncing");
-    await driveSync.syncNow({ interactive: false });
+    await syncDriveNow({ interactive: false });
     syncScheduler.start();
     startRealtimeChannel();
     updateSyncUi();
@@ -6497,7 +6503,7 @@ async function unlockEncryptedSyncWithRecoveryKey(recoveryKey, expected = {}) {
   }
   if (!unlocked) throw new Error(t("e2ee.noRecovery"));
   setDeviceLinkPhase("syncing");
-  await driveSync.syncNow({ interactive: false });
+  await syncDriveNow({ interactive: false });
   syncScheduler.start();
   startRealtimeChannel();
   updateSyncUi();
@@ -6929,7 +6935,7 @@ function pollPairingResponse() {
           workspaceId: requesterPairing.offer.workspaceId,
           keyId: requesterPairing.offer.keyId,
         });
-        await driveSync.syncNow({ interactive: false });
+        await syncDriveNow({ interactive: false });
         await driveSync.deleteArtifact("pairing-response", entry.artifactId);
         await driveSync.deleteArtifact("pairing-request", requesterPairing.request.requestId).catch(() => undefined);
         if (!await artifactWasDeleted("pairing-response", entry.artifactId)) throw new Error(t("pairing.consumeFailed"));
@@ -7104,11 +7110,13 @@ async function syncFromDialog() {
       const confirmKey = status.syncPaused ? "login.sync.resumeConfirm" : "login.sync.remoteMissingConfirm";
       if (!window.confirm(t(confirmKey))) return;
       if (el.syncStatus) el.syncStatus.textContent = t("login.sync.syncing");
-      await driveSync.resumeSync();
+      await syncOperations.run(() => driveSync.resumeSync());
+      if (driveSync.getStatus().localDirty) syncScheduler.noteLocalChange();
+      else syncScheduler.clearLocalChanges();
       resumed = true;
     }
     if (el.syncStatus) el.syncStatus.textContent = t("login.sync.syncing");
-    if (!resumed) await driveSync.syncNow({ interactive: false });
+    if (!resumed) await syncDriveNow({ interactive: false });
     syncScheduler.start();
     startRealtimeChannel();
   } catch (error) {
@@ -7134,7 +7142,7 @@ async function restoreGoogleConnection() {
   syncUiPhase = "checking";
   updateSyncUi();
   try {
-    await driveSync.syncNow({ interactive: false });
+    await syncDriveNow({ interactive: false });
     if (!driveSync.getStatus().syncPaused) syncScheduler.start();
     startRealtimeChannel();
   } catch (error) {
@@ -7170,6 +7178,10 @@ function handleRealtimeStatus({ state }) {
   if (connected) {
     realtimeReconnectAttempt = 0;
     clearRealtimeReconnect();
+    if (realtimeNeedsCatchup && !foregroundSyncInProgress) {
+      realtimeNeedsCatchup = false;
+      void syncOnForeground();
+    }
   } else if ((state === "disconnected" || state === "error") && !foregroundSyncInProgress) {
     scheduleRealtimeReconnect();
   }
@@ -7184,9 +7196,13 @@ function connectRealtimeChannel() {
       syncUiPhase = "receiving";
       updateSyncUi();
       try {
-        await driveSync.pull({ interactive: false });
+        await syncOperations.run(() => driveSync.pull({ interactive: false }));
       } catch (error) {
         updateSyncUi(error);
+        realtimeNeedsCatchup = true;
+        syncScheduler.setRealtimeConnected(false);
+        driveSync.disconnectRealtime();
+        scheduleRealtimeReconnect();
       } finally {
         syncUiPhase = null;
         updateSyncUi();
@@ -7208,7 +7224,7 @@ async function syncOnForeground() {
     syncUiPhase = "checking";
     updateSyncUi();
     try {
-      await driveSync.syncNow({ interactive: false });
+      await syncDriveNow({ interactive: false });
       if (!driveSync.getStatus().syncPaused) syncScheduler.start();
     } catch (error) {
       updateSyncUi(error);
@@ -7232,6 +7248,7 @@ function startRealtimeChannel() {
 function stopRealtimeChannel() {
   realtimeEnabled = false;
   realtimeReconnectAttempt = 0;
+  realtimeNeedsCatchup = false;
   clearRealtimeReconnect();
   foregroundSyncPromise = null;
   foregroundSyncInProgress = false;
@@ -7787,7 +7804,7 @@ el.detailTitle.addEventListener("input", () => {
 el.detailNote.addEventListener("blur", () => endCoalesce());
 el.detailNote.addEventListener("input", () => {
   const n = getNode(doc.selectedId);
-  if (!n) return;
+  if (!n || isCompleted(n)) return;
   beginCoalesce();
   n.note = el.detailNote.value;
   const row = document.querySelector(`.row[data-id="${n.id}"]`);
@@ -8401,11 +8418,11 @@ window.addEventListener("taskliner:localechange", () => {
 }
 clearSelection();
 render();
-void hydratePersistedDoc();
+const startupHydration = hydratePersistedDoc().catch(() => undefined);
 if (!skipPersist) {
   void syncDiscordSettingsUi();
   void completionOutbox.start().then(syncDiscordSettingsUi);
-  void restoreGoogleConnection();
+  void startupHydration.then(() => restoreGoogleConnection());
 }
 maybeOpenStarterDialog();
 

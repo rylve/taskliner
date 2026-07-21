@@ -239,6 +239,113 @@ test("encrypted sync stores envelopes and merges them in the browser", async () 
   assert.equal(firstDoc.nodes.root.title, "Changed on B");
 });
 
+test("an unsent edit remains dirty after the sync client is recreated", async () => {
+  const workspaceId = "workspace-1";
+  const keyId = "key-1";
+  const wdk = generateWorkspaceDataKey();
+  const api = fakeApi({ workspaceId, keyId });
+  const sharedStorage = memoryStorage("device-a");
+  let localDoc = doc("Uploaded");
+  const first = createTasklinerE2eeSync({
+    auth: auth(), storage: sharedStorage, api, getDocument: async () => localDoc,
+    applyDocument: async (value) => { localDoc = value; },
+  });
+  await first.persistWorkspaceKey(wdk, { workspaceId, keyId });
+  first.noteLocalChange();
+  await first.push({ allowEmptyRemote: true });
+
+  localDoc.nodes.root.title = "Edited before reload";
+  first.noteLocalChange();
+  await Promise.resolve();
+
+  const restarted = createTasklinerE2eeSync({
+    auth: auth(), storage: sharedStorage, api, getDocument: async () => localDoc,
+    applyDocument: async (value) => { localDoc = value; },
+  });
+  await restarted.load();
+  assert.equal(restarted.getStatus().localDirty, true);
+  await restarted.syncNow({ interactive: false });
+
+  let otherDoc = doc("Other device");
+  const other = createTasklinerE2eeSync({
+    auth: auth(), storage: memoryStorage("device-b"), api, getDocument: async () => otherDoc,
+    applyDocument: async (value) => { otherDoc = value; },
+  });
+  await other.persistWorkspaceKey(wdk, { workspaceId, keyId });
+  await other.pull();
+  assert.equal(otherDoc.nodes.root.title, "Edited before reload");
+});
+
+test("an already-open sibling tab adopts a persisted dirty marker", async () => {
+  const workspaceId = "workspace-1";
+  const keyId = "key-1";
+  const wdk = generateWorkspaceDataKey();
+  const api = fakeApi({ workspaceId, keyId });
+  const sharedStorage = memoryStorage("device-a");
+  let editorDoc = doc("Uploaded");
+  const editor = createTasklinerE2eeSync({
+    auth: auth(), storage: sharedStorage, api, getDocument: async () => editorDoc,
+    applyDocument: async (value) => { editorDoc = value; },
+  });
+  await editor.persistWorkspaceKey(wdk, { workspaceId, keyId });
+  editor.noteLocalChange();
+  await editor.push({ allowEmptyRemote: true });
+
+  let siblingDoc = structuredClone(editorDoc);
+  const sibling = createTasklinerE2eeSync({
+    auth: auth(), storage: sharedStorage, api, getDocument: async () => siblingDoc,
+    applyDocument: async (value) => { siblingDoc = value; },
+  });
+  await sibling.load();
+
+  editorDoc.nodes.root.title = "Edit from closing tab";
+  editor.noteLocalChange();
+  siblingDoc = structuredClone(editorDoc);
+  await Promise.resolve();
+  await sibling.syncNow({ interactive: false });
+  assert.equal(sibling.getStatus().localDirty, false);
+
+  let otherDoc = doc("Other device");
+  const other = createTasklinerE2eeSync({
+    auth: auth(), storage: memoryStorage("device-b"), api, getDocument: async () => otherDoc,
+    applyDocument: async (value) => { otherDoc = value; },
+  });
+  await other.persistWorkspaceKey(wdk, { workspaceId, keyId });
+  await other.pull();
+  assert.equal(otherDoc.nodes.root.title, "Edit from closing tab");
+});
+
+test("encrypted pushes use one cross-tab Web Lock per device", async () => {
+  const workspaceId = "workspace-1";
+  const keyId = "key-1";
+  const api = fakeApi({ workspaceId, keyId });
+  const requestedLocks = [];
+  let tail = Promise.resolve();
+  const lockManager = {
+    request(name, operation) {
+      requestedLocks.push(name);
+      const current = tail.then(operation, operation);
+      tail = current.catch(() => undefined);
+      return current;
+    },
+  };
+  const sync = createTasklinerE2eeSync({
+    auth: auth(),
+    storage: memoryStorage("device-a"),
+    api,
+    lockManager,
+    getDocument: async () => doc("Local"),
+  });
+  await sync.persistWorkspaceKey(generateWorkspaceDataKey(), { workspaceId, keyId });
+  sync.noteLocalChange();
+
+  await Promise.all([
+    sync.push({ allowEmptyRemote: true }),
+    sync.push({ allowEmptyRemote: true }),
+  ]);
+  assert.deepEqual(requestedLocks, ["taskliner-sync:device-a", "taskliner-sync:device-a"]);
+});
+
 test("encrypted push does not apply a stale response over an edit made during the request", async () => {
   const workspaceId = "workspace-1";
   const keyId = "key-1";

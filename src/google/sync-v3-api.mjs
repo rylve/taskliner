@@ -1,3 +1,5 @@
+import { retryAfterMs, retryWithBackoff } from "../sync/backoff.mjs";
+
 export const SYNC_V3_ARTIFACT_KINDS = Object.freeze([
   "device-envelope",
   "key-wrapper",
@@ -20,12 +22,14 @@ function assertArtifactId(artifactId) {
 }
 
 export class SyncV3ApiError extends Error {
-  constructor(message, { status = 0, code = "sync_v3_failed", body = null } = {}) {
+  constructor(message, { status = 0, code = "sync_v3_failed", body = null, retryAfter = null, retryable = false } = {}) {
     super(message);
     this.name = "SyncV3ApiError";
     this.status = status;
     this.code = code;
     this.body = body;
+    this.retryAfterMs = retryAfter;
+    this.retryable = retryable;
   }
 }
 
@@ -36,10 +40,13 @@ export class SyncV3ConflictError extends SyncV3ApiError {
   }
 }
 
-export function createSyncV3Api({ fetchImpl = globalThis.fetch?.bind(globalThis) } = {}) {
+export function createSyncV3Api({
+  fetchImpl = globalThis.fetch?.bind(globalThis),
+  retryOptions = {},
+} = {}) {
   if (typeof fetchImpl !== "function") throw new TypeError("fetchImpl is required");
 
-  async function request(path, options = {}) {
+  async function requestOnce(path, options = {}) {
     let response;
     try {
       response = await fetchImpl(path, {
@@ -53,7 +60,7 @@ export function createSyncV3Api({ fetchImpl = globalThis.fetch?.bind(globalThis)
         },
       });
     } catch {
-      throw new SyncV3ApiError("Taskliner sync server is unavailable", { code: "sync_v3_unavailable" });
+      throw new SyncV3ApiError("Taskliner sync server is unavailable", { code: "sync_v3_unavailable", retryable: true });
     }
 
     const text = await response.text();
@@ -64,12 +71,24 @@ export function createSyncV3Api({ fetchImpl = globalThis.fetch?.bind(globalThis)
         status: response.status,
         code: typeof body?.code === "string" ? body.code : "sync_v3_failed",
         body,
+        retryAfter: retryAfterMs(response.headers),
+        retryable: response.status === 429 || response.status >= 500,
       };
       const message = body?.message || `Sync v3 request failed: ${response.status}`;
       if (response.status === 409) throw new SyncV3ConflictError(message, details);
       throw new SyncV3ApiError(message, details);
     }
     return body;
+  }
+
+  function request(path, options = {}) {
+    return retryWithBackoff(() => requestOnce(path, options), {
+      maxRetries: 3,
+      baseDelayMs: 250,
+      maxDelayMs: 30_000,
+      jitterRatio: 0.2,
+      ...retryOptions,
+    });
   }
 
   function artifactQuery(kind, artifactId = null) {

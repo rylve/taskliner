@@ -38,9 +38,13 @@ test("public information pages are included in the static site", () => {
 
 test("the service worker cache includes the current public shell", () => {
   const serviceWorker = read("sw.js");
-  assert.match(serviceWorker, /taskliner-shell-v27/);
+  assert.match(serviceWorker, /taskliner-shell-v33/);
+  assert.match(serviceWorker, /new Request\(url, \{ cache: "reload" \}\)/);
+  assert.match(serviceWorker, /new Request\(event\.request, \{ cache: "no-cache" \}\)/);
   assert.match(serviceWorker, /\.\/guided\.js/);
-  for (const asset of ["site.css", "favicon.svg", "logo-mark.svg", "privacy/", "terms/", "contact/", "data-and-sync/", "tutorial/", "src/model/outline-selectors.mjs", "src/model/outline-operations.mjs", "src/sync/content-snapshot.mjs", "src/storage/integration-settings.mjs", "src/integrations/completion-outbox.mjs", "src/integrations/discord-webhook.mjs", "src/google/taskliner-e2ee-sync.mjs", "src/pairing/qr-code.mjs", "src/pairing/pairing-fragment.mjs", "vendor/flatpickr/flatpickr.min.css", "vendor/flatpickr/flatpickr.min.js", "vendor/flatpickr/l10n/ja.js"]) {
+  assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
+  assert.match(serviceWorker, /event\.request\.mode === "navigate"/);
+  for (const asset of ["site.css", "favicon.svg", "logo-mark.svg", "privacy/", "terms/", "contact/", "data-and-sync/", "tutorial/", "src/model/outline-selectors.mjs", "src/model/outline-operations.mjs", "src/sync/content-snapshot.mjs", "src/sync/document-guard.mjs", "src/storage/integration-settings.mjs", "src/integrations/completion-outbox.mjs", "src/integrations/discord-webhook.mjs", "src/google/taskliner-e2ee-sync.mjs", "src/pairing/qr-code.mjs", "src/pairing/pairing-fragment.mjs", "vendor/flatpickr/flatpickr.min.css", "vendor/flatpickr/flatpickr.min.js", "vendor/flatpickr/l10n/ja.js"]) {
     assert.match(serviceWorker, new RegExp(`\\./${asset.replace("/", "\\/")}`));
   }
 });
@@ -191,6 +195,32 @@ test("the header exposes a compact sync status", () => {
   assert.match(app, /headerState = "actionRequired"/);
 });
 
+test("sync conflict checks compare the same full document shape", () => {
+  const app = read("app.js");
+  assert.match(app, /createSyncApplyGuard\(\{ storage, activeDoc: doc, expectedFullSnapshot: expectedSnapshot \}\)/);
+  assert.match(app, /activeProjectionIsCurrent\(guard\.activeSnapshot, doc\)/);
+  assert.match(app, /if \(!status\.localDirty\) return true/);
+  assert.match(app, /remote_data_missing/);
+  assert.match(app, /else syncScheduler\.clearLocalChanges\(\)/);
+  assert.match(app, /syncOperations\.run\(\(\) => driveSync\.syncNow\(options\)\)/);
+});
+
+test("realtime failures reconnect and completed notes remain immutable", () => {
+  const app = read("app.js");
+  assert.match(app, /if \(realtimeNeedsCatchup && !foregroundSyncInProgress\)/);
+  assert.match(app, /realtimeNeedsCatchup = false;\s*void syncOnForeground\(\)/);
+  assert.match(app, /updateSyncUi\(error\);\s*realtimeNeedsCatchup = true/);
+  assert.match(app, /driveSync\.disconnectRealtime\(\);\s*scheduleRealtimeReconnect\(\)/);
+  assert.match(app, /el\.detailNote\.disabled = isCompleted\(n\)/);
+  assert.match(app, /if \(!n \|\| isCompleted\(n\)\) return/);
+});
+
+test("startup waits for local storage repair before restoring sync", () => {
+  const app = read("app.js");
+  assert.match(app, /const startupHydration = hydratePersistedDoc\(\)\.catch/);
+  assert.match(app, /startupHydration\.then\(\(\) => restoreGoogleConnection\(\)\)/);
+});
+
 test("tutorial uses the production app in a disposable guided mode", () => {
   const html = read("tutorial/index.html");
   const appHtml = read("index.html");
@@ -307,7 +337,7 @@ test("production E2EE is enabled without weakening script CSP", () => {
   assert.match(app, /error instanceof E2eeSetupRequiredError\) await setupEncryptedSync\(\)/);
   assert.match(app, /migrationLockExpiresAt > Date\.now\(\)/);
   assert.match(app, /\["legacy", "migrating"\]\.includes\(setupStatus\.e2eeStatus\)/);
-  assert.match(app, /active split projection can contain stale tutorial links/);
+  assert.match(app, /Keep archive placeholders while repairing all active parent\/child links/);
   assert.match(app, /const repairedDoc = migrateDoc\(storedDoc\)/);
 });
 
@@ -338,7 +368,7 @@ test("device linking is a guided OAuth-to-approval flow instead of an error stat
   assert.match(app, /inviterPairing\.responseArtifactId = result\.response\.responseId[\s\S]*pollPairingCompletion\(\)/);
   assert.match(app, /function pollPairingCompletion\(\)[\s\S]*setPairingPhase\("complete"\)/);
   assert.match(app, /setDeviceLinkPhase\("syncing"\)[\s\S]*resolve\?\.\(true\)/);
-  assert.match(app, /await driveSync\.syncNow\(\{ interactive: false \}\)[\s\S]*await driveSync\.deleteArtifact\("pairing-response", entry\.artifactId\)/);
+  assert.match(app, /await syncDriveNow\(\{ interactive: false \}\)[\s\S]*await driveSync\.deleteArtifact\("pairing-response", entry\.artifactId\)/);
   assert.match(app, /body\.scrollTop = 0/);
   assert.match(protocol, /confirmationCodePart/);
   assert.doesNotMatch(protocol, /あさ|ひつじ/);

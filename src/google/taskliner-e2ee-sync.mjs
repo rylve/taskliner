@@ -57,6 +57,7 @@ function normalizeMetadata(value) {
     accountId: typeof source.accountId === "string" && source.accountId ? source.accountId : null,
     lamportCounter: Number.isInteger(source.lamportCounter) && source.lamportCounter >= 0 ? source.lamportCounter : 0,
     hasSynced: source.hasSynced === true,
+    localDirty: source.localDirty === true,
     syncPaused: source.syncPaused === true,
     remoteMissing: source.remoteMissing === true,
     accountMismatch: source.accountMismatch === true,
@@ -146,6 +147,7 @@ export function createTasklinerE2eeSync({
   clearTimeoutFn = globalThis.clearTimeout,
   realtimeHeartbeatMs = REALTIME_HEARTBEAT_MS,
   realtimePongTimeoutMs = REALTIME_PONG_TIMEOUT_MS,
+  lockManager = globalThis.navigator?.locks,
 } = {}) {
   if (!auth || typeof auth.hasToken !== "function") throw new TypeError("auth is required");
   if (!storage || typeof storage.readSyncMetadata !== "function" || typeof storage.readSyncSecret !== "function") {
@@ -209,8 +211,35 @@ export function createTasklinerE2eeSync({
     metadata = normalizeMetadata(await storage.readSyncMetadata());
     localSecret = await storage.readSyncSecret();
     await restoreLocalKey();
+    localDirty = metadata.localDirty;
+    if (metadata.lastState) {
+      try {
+        const currentDoc = await getDocument();
+        const lastProjected = projectMergedState(metadata.lastState, { baseDoc: currentDoc });
+        localDirty ||= createSyncContentSnapshot(currentDoc) !== createSyncContentSnapshot(lastProjected);
+      } catch {
+        // A malformed prior snapshot must never clear an explicitly persisted dirty marker.
+      }
+    }
+    metadata.localDirty = localDirty;
     await storage.writeSyncMetadata(cloneJson(metadata));
     loaded = true;
+  }
+
+  async function refreshLocalDirty() {
+    const persisted = normalizeMetadata(await storage.readSyncMetadata());
+    if (persisted.localDirty) localDirty = true;
+    if (!localDirty && metadata.lastState) {
+      try {
+        const currentDoc = await getDocument();
+        const lastProjected = projectMergedState(metadata.lastState, { baseDoc: currentDoc });
+        localDirty = createSyncContentSnapshot(currentDoc) !== createSyncContentSnapshot(lastProjected);
+      } catch {
+        // Keep the current marker when the comparison cannot be completed safely.
+      }
+    }
+    if (localDirty && !metadata.localDirty) await saveMetadata({ localDirty: true });
+    return localDirty;
   }
 
   async function requireAuthorization(interactive = false) {
@@ -420,8 +449,8 @@ export function createTasklinerE2eeSync({
     if (!wdk) throw new E2eeSyncLockedError();
     if (metadata.pendingKeyWrappers.length) {
       for (const wrapper of metadata.pendingKeyWrappers) await api.put("key-wrapper", wrapper.wrapperId, wrapper);
-      await saveMetadata({ pendingKeyWrappers: [] });
       localDirty = true;
+      await saveMetadata({ pendingKeyWrappers: [], localDirty: true });
     }
     return response;
   }
@@ -429,6 +458,7 @@ export function createTasklinerE2eeSync({
   async function pull({ interactive = false } = {}) {
     try {
       await load();
+      await refreshLocalDirty();
       await requireAuthorization(interactive);
       await assertReady();
       if (metadata.syncPaused) return { skipped: true, reason: "sync_paused" };
@@ -461,6 +491,7 @@ export function createTasklinerE2eeSync({
         lastSyncedAt: new Date(now()).toISOString(),
         lastError: null,
         e2eeStatus: "encrypted-active",
+        localDirty: skippedDuring,
       };
       // Do not stamp a remote merge that excluded in-flight local edits as lastState.
       if (!skippedDuring) metadataPatch.lastState = applied.merged;
@@ -476,7 +507,15 @@ export function createTasklinerE2eeSync({
     }
   }
 
-  async function push({ interactive = false, allowEmptyRemote = false, setup = false } = {}) {
+  async function push(options = {}) {
+    await load();
+    if (lockManager?.request) {
+      return lockManager.request(`taskliner-sync:${metadata?.deviceId || "device"}`, () => pushInternal(options));
+    }
+    return pushInternal(options);
+  }
+
+  async function pushInternal({ interactive = false, allowEmptyRemote = false, setup = false } = {}) {
     try {
       await load();
       await requireAuthorization(interactive);
@@ -531,6 +570,7 @@ export function createTasklinerE2eeSync({
         lastSyncedAt: new Date(now()).toISOString(),
         lastError: null,
         e2eeStatus: "encrypted-active",
+        localDirty: localChangesPending,
       };
       if (!localChangesPending) metadataPatch.lastState = applied.merged;
       await saveMetadata(metadataPatch);
@@ -547,6 +587,7 @@ export function createTasklinerE2eeSync({
 
   async function syncNow({ interactive = true } = {}) {
     await load();
+    await refreshLocalDirty();
     await requireAuthorization(interactive);
     await assertReady();
     return localDirty ? push({ interactive: false }) : pull({ interactive: false });
@@ -900,8 +941,16 @@ export function createTasklinerE2eeSync({
     discardWorkspaceKey,
     resumeSync,
     deleteRemoteData,
-    noteLocalChange() { localDirty = true; },
-    clearLocalChange() { localDirty = false; },
+    noteLocalChange() {
+      localDirty = true;
+      if (loaded) void saveMetadata({ localDirty: true });
+      else void load().then(() => saveMetadata({ localDirty: true }));
+    },
+    clearLocalChange() {
+      localDirty = false;
+      if (loaded) void saveMetadata({ localDirty: false });
+      else void load().then(() => saveMetadata({ localDirty: false }));
+    },
     getWorkspaceKey() { return wdk ? new Uint8Array(wdk) : null; },
     getStatus() {
       return {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "taskliner-shell-v27";
+const CACHE_NAME = "taskliner-shell-v33";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -45,6 +45,7 @@ const APP_SHELL = [
   "./src/sync/project.mjs",
   "./src/sync/scheduler.mjs",
   "./src/sync/content-snapshot.mjs",
+  "./src/sync/document-guard.mjs",
   "./src/integrations/completion-outbox.mjs",
   "./src/integrations/discord-webhook.mjs",
   "./src/integrations/discord-sync-policy.mjs",
@@ -54,7 +55,7 @@ const APP_SHELL = [
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
+      .then((cache) => Promise.all(APP_SHELL.map((url) => cache.add(new Request(url, { cache: "reload" })))))
       .then(() => self.skipWaiting())
   );
 });
@@ -68,14 +69,20 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
+  const url = new URL(event.request.url);
+  if (event.request.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
   event.respondWith(
-    fetch(event.request)
+    fetch(new Request(event.request, { cache: "no-cache" }))
       .then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
         return response;
       })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+      .catch(() => caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return event.request.mode === "navigate" ? caches.match("./index.html") : Response.error();
+      }))
   );
 });

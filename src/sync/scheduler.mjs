@@ -1,6 +1,20 @@
 export const DEFAULT_PUSH_DEBOUNCE_MS = 4_000;
+export const DEFAULT_PUSH_RETRY_BASE_MS = 30_000;
+export const DEFAULT_PUSH_RETRY_MAX_MS = 5 * 60_000;
 export const DEFAULT_ACTIVE_PULL_MS = 10 * 60_000;
 export const DEFAULT_IDLE_PULL_MS = 15 * 60_000;
+
+export function createSyncOperationQueue() {
+  let tail = Promise.resolve();
+  return {
+    run(operation) {
+      if (typeof operation !== "function") throw new TypeError("A sync operation must be a function");
+      const current = tail.then(operation, operation);
+      tail = current.catch(() => undefined);
+      return current;
+    },
+  };
+}
 
 function asDelay(value, fallback) {
   const number = Number(value);
@@ -17,6 +31,8 @@ export function createSyncScheduler({
   onPull = async () => undefined,
   onError = () => undefined,
   pushDebounceMs = DEFAULT_PUSH_DEBOUNCE_MS,
+  pushRetryBaseMs = DEFAULT_PUSH_RETRY_BASE_MS,
+  pushRetryMaxMs = DEFAULT_PUSH_RETRY_MAX_MS,
   activePullMs = DEFAULT_ACTIVE_PULL_MS,
   idlePullMs = DEFAULT_IDLE_PULL_MS,
   setTimeoutFn = globalThis.setTimeout,
@@ -31,6 +47,8 @@ export function createSyncScheduler({
   }
 
   const pushDelay = asDelay(pushDebounceMs, DEFAULT_PUSH_DEBOUNCE_MS);
+  const pushRetryBaseDelay = asDelay(pushRetryBaseMs, DEFAULT_PUSH_RETRY_BASE_MS);
+  const pushRetryMaxDelay = Math.max(pushRetryBaseDelay, asDelay(pushRetryMaxMs, DEFAULT_PUSH_RETRY_MAX_MS));
   const activeDelay = asDelay(activePullMs, DEFAULT_ACTIVE_PULL_MS);
   const idleDelay = asDelay(idlePullMs, DEFAULT_IDLE_PULL_MS);
   let pushTimer = null;
@@ -43,6 +61,12 @@ export function createSyncScheduler({
   let lastPullAt = null;
   let pullInFlight = false;
   let pushInFlight = false;
+  let pushFailureCount = 0;
+
+  const pushRetryDelay = () => Math.min(
+    pushRetryMaxDelay,
+    pushRetryBaseDelay * (2 ** Math.max(0, pushFailureCount - 1)),
+  );
 
   const reportError = (error, phase) => {
     try {
@@ -63,18 +87,24 @@ export function createSyncScheduler({
   };
 
   const runPush = async () => {
-    if (!online || !visible || pushInFlight || !pushQueued) return false;
+    if (!running || !online || !visible || pushInFlight || !pushQueued) return false;
     pushInFlight = true;
     pushQueued = false;
+    let rescheduleDelay = pushDelay;
     try {
-      await onPush();
-      return true;
+      const completed = await onPush();
+      if (completed === false) pushQueued = true;
+      pushFailureCount = 0;
+      return completed !== false;
     } catch (error) {
       pushQueued = true;
+      pushFailureCount += 1;
+      rescheduleDelay = pushRetryDelay();
       reportError(error, "push");
       return false;
     } finally {
       pushInFlight = false;
+      if (pushQueued) schedulePush(rescheduleDelay);
     }
   };
 
@@ -102,13 +132,13 @@ export function createSyncScheduler({
     }, visible ? activeDelay : idleDelay);
   };
 
-  const schedulePush = () => {
+  const schedulePush = (delay = pushFailureCount > 0 ? pushRetryDelay() : pushDelay) => {
     clearPushTimer();
-    if (!online || !visible || !pushQueued) return;
+    if (!running || !online || !visible || !pushQueued) return;
     pushTimer = setTimeoutFn(() => {
       pushTimer = null;
       return runPush();
-    }, pushDelay);
+    }, delay);
   };
 
   return {
@@ -132,12 +162,20 @@ export function createSyncScheduler({
       return this.getStatus();
     },
 
+    clearLocalChanges() {
+      pushQueued = false;
+      pushFailureCount = 0;
+      clearPushTimer();
+      return this.getStatus();
+    },
+
     setOnline(nextOnline) {
       online = !!nextOnline;
       if (!online) {
         clearPushTimer();
         clearPullTimer();
       } else {
+        pushFailureCount = 0;
         schedulePush();
         schedulePull();
       }

@@ -49,6 +49,28 @@ test("sync v3 API exposes migration conflicts as a typed error", async () => {
   );
 });
 
+test("sync v3 API retries 429 with Retry-After before succeeding", async () => {
+  let calls = 0;
+  const delays = [];
+  const api = createSyncV3Api({
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) {
+        return new Response(JSON.stringify({ code: "rate_limited" }), {
+          status: 429,
+          headers: { "Content-Type": "application/json", "Retry-After": "2" },
+        });
+      }
+      return response({ ok: true });
+    },
+    retryOptions: { sleepFn: async (delay) => { delays.push(delay); } },
+  });
+
+  assert.deepEqual(await api.status(), { ok: true });
+  assert.equal(calls, 2);
+  assert.deepEqual(delays, [2_000]);
+});
+
 test("sync v3 API rejects unknown artifact kinds before making a request", async () => {
   let called = false;
   const api = createSyncV3Api({ fetchImpl: async () => { called = true; return response({}); } });
