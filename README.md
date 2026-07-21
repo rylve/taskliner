@@ -12,7 +12,7 @@ Local-first, private, open source, and ad-free.
 ## Screenshot
 
 <p align="center">
-  <img src="./docs/screenshots/desktop-outline.jpg" alt="Taskliner desktop outline view with task details" width="720">
+  <img src="./docs/screenshots/desktop-outline.gif" alt="Taskliner desktop outline view with task details" width="720">
 </p>
 
 ## Features
