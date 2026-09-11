@@ -18,7 +18,9 @@ Please do **not** include:
 
 ## Scope
 
-In scope for reports against the **official latest version** at [taskliner.app](https://taskliner.app) and the matching source in this repository:
+This repository is a fixed reference snapshot. The official service at [taskliner.app](https://taskliner.app) is built from a private repository and may differ from this code. Reviewing this snapshot does not verify the deployed service.
+
+When reporting a security issue, identify whether it affects this snapshot or the hosted service, and include the snapshot commit or the date and affected public URL where possible. Useful report topics include:
 
 - Exposure of task content, Workspace Data Keys, recovery material, or Discord Webhook URLs outside intended boundaries
 - Authentication / OAuth / session handling flaws in the official sync path
@@ -36,6 +38,7 @@ Out of scope examples:
 ## Expectations
 
 - First response time and fix timelines are **not guaranteed**
+- Ongoing updates to this public snapshot are not promised; a hosted-service fix may not appear here
 - Reports against outdated forks or heavily modified self-hosted instances may be declined
 - This codebase’s cryptography and sync design are documented for transparency; they are **not** a formal security audit or a guarantee of absolute safety
 

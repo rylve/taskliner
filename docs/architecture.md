@@ -2,6 +2,8 @@
 
 Taskliner is a browser-based outline task editor with local-first storage and optional encrypted multi-device sync.
 
+This document describes the public reference snapshot. The official hosted app is maintained in a private repository, may differ from this snapshot, and is not automatically synchronized here.
+
 ## Static frontend
 
 The UI is static HTML, CSS, and JavaScript (`index.html`, `app.js`, `src/`, styles, and related assets). No application server is required for local-only use.

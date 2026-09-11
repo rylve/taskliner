@@ -2,10 +2,12 @@
 
 Thanks for your interest in Taskliner.
 
+This repository is a public reference snapshot, not an actively maintained mirror of the hosted service. The official website is developed separately in a private repository. No ongoing source updates or pull request reviews are promised. You may fork and adapt this snapshot under its MIT License.
+
 ## What is welcome
 
 - Bug reports with clear reproduction steps
-- Concrete, actionable feedback about the official app at [taskliner.app](https://taskliner.app)
+- Reports that clearly identify the snapshot commit they concern
 - Small focused fixes when they help (typos, docs, narrow bug fixes, useful tests)
 
 ## How this project is developed
@@ -16,7 +18,7 @@ Replies, bug fixes, feature work, and pull request review are **not guaranteed**
 
 ## Pull requests
 
-- Open an Issue **before** implementing large changes. Discuss scope first.
+- Do not assume that a proposed change will be reviewed or incorporated into the hosted service. Contact the maintainer before investing in a contribution.
 - Keep changes small and focused.
 - Large PRs submitted without prior Issue discussion may be closed without detailed review.
 - Bulk auto-generated or AI-generated PR floods are not accepted.

@@ -2,7 +2,11 @@
 
 ## Official hosted app
 
-For ordinary bugs and concrete product feedback about [taskliner.app](https://taskliner.app), open a GitHub Issue using the Bug Report template when possible.
+The official service at [taskliner.app](https://taskliner.app) is built from a private repository and may differ from this reference snapshot. Contact the operator through [the contact page](https://taskliner.app/contact/) for hosted-service feedback. Replies, fixes, and continued availability are not guaranteed; see the service's Terms.
+
+## Public snapshot
+
+This repository is retained for reference and is not the hosted service's ongoing development or support queue. Ongoing source updates and pull request reviews are not promised.
 
 ## Security
 

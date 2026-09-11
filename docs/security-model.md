@@ -1,6 +1,6 @@
 # Security model
 
-This document describes the intended security boundaries of Taskliner. It is documentation for transparency, **not** a formal audit report and **not** a guarantee of absolute safety.
+This document describes the intended security boundaries of the **public reference snapshot**. The official service is built from a private repository and may differ from this code. This document does not verify the current deployment. It is documentation for transparency, **not** a formal audit report and **not** a guarantee of absolute safety.
 
 ## What we try to protect
 

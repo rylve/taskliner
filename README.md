@@ -5,9 +5,17 @@
 </p>
 
 **A fast, keyboard-first task outliner.**  
-Local-first, private, open source, and ad-free.
+Local-first task editing with an optional encrypted sync design.
 
 **Official app:** [https://taskliner.app](https://taskliner.app)
+
+## Public reference snapshot
+
+This repository preserves the publicly released implementation for reference, learning, and inspection of its design. As of September 12, 2026, it is no longer a continuously maintained mirror of the official app.
+
+The official website is built from a separately maintained **private repository**, with changes that may not appear here. This snapshot can help explain the design of the published version; it cannot establish the security or exact behavior of the current hosted service and is not a security audit.
+
+No ongoing source updates, feature development, fixes, or pull request reviews are promised for this repository. The source already published here remains available under the MIT License. The features and technical descriptions below describe this snapshot. For current hosted-service data practices, advertising status, and terms, consult the [Privacy Policy](https://taskliner.app/privacy/) and [Terms](https://taskliner.app/terms/).
 
 ## Screenshot
 
@@ -123,9 +131,7 @@ Self-hosting is provided for reproducibility under the MIT License. It is **not*
 
 ## Feedback and contributions
 
-Bug reports and concrete feedback are welcome.
-
-Taskliner is mainly developed by the maintainer. Replies, fixes, and pull request review are not guaranteed. Large changes need an Issue discussion first. See [CONTRIBUTING.md](./CONTRIBUTING.md) and [SUPPORT.md](./SUPPORT.md).
+This is a reference snapshot rather than the development repository for the hosted service. Ongoing fixes and pull request review are not promised. See [CONTRIBUTING.md](./CONTRIBUTING.md) and [SUPPORT.md](./SUPPORT.md) for the scope of this repository and hosted-service contact information.
 
 ## License and trademarks
 
